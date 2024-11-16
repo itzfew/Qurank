@@ -2,10 +2,10 @@ const CACHE_NAME = 'pwa-cache-v1';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/styles.css',
-    '/app.js',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    '/surah.html',
+    '/hadith.html',
+    'Quran_kareem_logo.png',
+    'Quran_kareem_logo.png'
 ];
 
 self.addEventListener('install', (event) => {
