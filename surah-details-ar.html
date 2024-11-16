@@ -8,10 +8,8 @@
     <style>
         body {
             font-family: 'Amiri', serif;
-            background-image: url('https://yourbackgroundimageurl.com/image.jpg');
-            background-size: cover;
-            background-attachment: fixed;
-            color: #333;
+            background-color: white; /* Default white background */
+            color: black; /* Default black text */
             margin: 0;
             padding: 0;
             transition: background-color 0.5s, color 0.5s, font-family 0.5s;
@@ -24,8 +22,7 @@
             justify-content: flex-start;
             align-items: center;
             padding: 10px 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-bottom: 2px solid #3498db;
+            background-color: rgba(255, 255, 255, 0.9); /* Light background */
             position: fixed;
             top: 0;
             left: 0;
@@ -43,7 +40,7 @@
         }
 
         .settings-item:hover {
-            color: #2980b9;
+            color: gray; /* Gray hover effect */
             transform: scale(1.1);
         }
 
@@ -51,7 +48,8 @@
             padding: 5px;
             font-size: 16px;
             border-radius: 5px;
-            border: 1px solid #3498db;
+            background-color: white; /* White background for input */
+            color: black; /* Black text */
         }
 
         .header {
@@ -62,10 +60,7 @@
         .surah-heading {
             font-size: 1.7em;
             padding: 5px;
-            border: 0px solid #3498db;
-            border-radius: 0px;
-            color: #3498db;
-            box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
+            color: black; /* Black text */
             text-transform: uppercase;
             font-weight: bold;
             letter-spacing: 1px;
@@ -76,9 +71,7 @@
             font-size: 1.8em;
             margin: 5px 0;
             padding: 0px;
-            border-radius: 10px;
-            border: 0px solid #3498db;
-            color: #2980b9;
+            color: black; /* Black text */
             font-weight: bold;
             direction: rtl;  /* Right-to-left for Arabic */
         }
@@ -86,13 +79,12 @@
         .verse {
             margin: 5px 0;
             padding: 15px;
-            border-radius: 8px;
-            background-color: rgba(236, 240, 241, 0.8);
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             position: relative;
-            border-left: 5px solid #3498db;
+            background-color: transparent; /* Transparent background */
+            color: black; /* Black text */
             transition: background-color 0.3s;
             cursor: pointer;
             font-size: 1.5em;
@@ -103,16 +95,15 @@
         }
 
         .verse:hover {
-            background-color: rgba(52, 152, 219, 0.2);
+            background-color: rgba(0, 0, 0, 0.1); /* Darker background on hover */
         }
 
         .verse-number {
             font-size: 1.0em;
-            color: #2980b9;
             margin-top: 10px;
             font-weight: bold;
-            border: 2px solid #2980b9;
-            border-radius: 50%;
+            background-color: transparent;
+            color: black; /* Black text */
         }
 
         .highlighted {
@@ -126,7 +117,7 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #3498db;
+            background-color: black; /* Black background */
             color: white;
             padding: 10px;
             border-radius: 5px;
@@ -146,7 +137,7 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background-color: #3498db;
+            background-color: black; /* Black background */
             color: white;
             border: none;
             padding: 10px 15px;
@@ -155,25 +146,24 @@
             font-size: 16px;
             display: none;
             transition: background-color 0.3s;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .back-to-top:hover {
-            background-color: #2980b9;
+            background-color: gray; /* Gray hover effect */
         }
 
         .dark-mode {
-            background-color: #2c3e50;
-            color: #ecf0f1;
+            background-color: black; /* Black background in dark mode */
+            color: white; /* White text in dark mode */
         }
 
         .dark-mode .verse {
-            background-color: rgba(52, 152, 219, 0.2);
-            color: #ecf0f1;
+            background-color: rgba(0, 0, 0, 0.1); /* Darker background for verse */
+            color: white;
         }
 
         .dark-mode .verse-number {
-            color: #ecf0f1;
+            color: white;
         }
 
         /* Responsive Design */
