@@ -44,14 +44,6 @@
             transform: scale(1.1);
         }
 
-        #verseSearch {
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 5px;
-            background-color: white; /* White background for input */
-            color: black; /* Black text */
-        }
-
         .header {
             text-align: center;
             margin-top: 60px;
@@ -192,7 +184,6 @@
 
 <!-- Settings Section at the top (Fixed) -->
 <div class="settings-container">
-    <input type="text" id="verseSearch" placeholder="Search for a verse..." onkeyup="searchVerse()" />
     <div class="settings-item" onclick="toggleTheme()">
         <i class="fas fa-adjust"></i>
     </div>
@@ -333,19 +324,6 @@
         localStorage.removeItem('textSize');
         localStorage.removeItem('selectedFont');
         location.reload();
-    }
-
-    function searchVerse() {
-        const searchQuery = document.getElementById('verseSearch').value.toLowerCase();
-        const verses = document.querySelectorAll('.verse');
-        verses.forEach((verse) => {
-            const verseText = verse.textContent.toLowerCase();
-            if (verseText.includes(searchQuery)) {
-                verse.style.display = '';
-            } else {
-                verse.style.display = 'none';
-            }
-        });
     }
 </script>
 
