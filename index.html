@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quran Surahs</title>
 
+    <!-- Link to Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
     <!-- Internal CSS -->
     <style>
         /* Resetting some basic styles */
@@ -23,9 +26,14 @@
             overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
+        /* Dark Mode */
+        body.dark-mode {
+            background-color: #1a1a1a;  /* Dark background */
+            color: #fff;  /* White text */
+        }
+
         /* Header Styles */
         header {
-            background-color: #2c3e50;
             color: white;
             padding: 20px;
             text-align: center;
@@ -68,17 +76,23 @@
 
         /* Surah Card Styles */
         .surah-item {
-            background-color: white;
+            background-color: #fff; /* Light background for Surah item */
             border-radius: 8px;
             padding: 10px;
             display: flex; /* Flexbox to display items horizontally */
             justify-content: space-between; /* Space out content */
             align-items: center; /* Center content vertically */
-            border: 1px solid #ddd; /* Adding subtle border */
+            border: 1px solid #ccc; /* Light grey border for hollow effect */
             height: auto;
             overflow: hidden; /* Prevent overflow */
             cursor: pointer;
             white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        /* Dark Mode Surah Card */
+        body.dark-mode .surah-item {
+            background-color: #333;  /* Dark background for Surah item */
+            border: 1px solid #444;  /* Slightly darker border */
         }
 
         /* Surah Title */
@@ -114,6 +128,28 @@
             white-space: nowrap;
         }
 
+        /* Dark Mode Text */
+        body.dark-mode .surah-title, 
+        body.dark-mode .surah-arabic,
+        body.dark-mode .surah-meta p {
+            color: #fff; /* White text in dark mode */
+        }
+
+        /* Dark Mode Adjustments for Controls */
+        body.dark-mode .controls input,
+        body.dark-mode .controls select {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+        }
+
+        /* Dark Mode Input Focus */
+        body.dark-mode .controls input:focus,
+        body.dark-mode .controls select:focus {
+            background-color: #555;
+            outline: none;
+        }
+
         /* Responsive Layout */
         @media (max-width: 768px) {
             header {
@@ -143,6 +179,34 @@
             }
         }
 
+        /* Settings Section */
+        .settings-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #f0f0f0;
+        }
+
+        .settings-item {
+            margin-right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: black; /* Default color for settings items */
+        }
+
+        .settings-container.dark-mode {
+            background-color: #333;
+        }
+
+        .settings-item.dark-mode {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +214,13 @@
     <header>
         Quran Surahs
     </header>
+
+    <!-- Settings Section at the top (Fixed) -->
+    <div class="settings-container">
+        <div class="settings-item" onclick="toggleTheme()">
+            <i class="fas fa-adjust"></i>
+        </div>
+    </div>
 
     <!-- Search and Sort Controls -->
     <div class="controls">
@@ -216,6 +287,12 @@
                 surah.type.toLowerCase().includes(searchTerm)
             );
             renderSurahs(filteredSurahs);  // Re-render filtered Surahs
+        }
+
+        // Function to toggle dark mode
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDark);
         }
 
         // Function to sort Surahs based on selected option
