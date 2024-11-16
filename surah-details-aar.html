@@ -72,6 +72,7 @@
             box-sizing: border-box;
             direction: rtl;
             text-align: right;
+            cursor: pointer;
         }
 
         .verse:hover {
@@ -100,6 +101,12 @@
         .dark-mode .verse {
             background-color: rgba(0, 0, 0, 0.1);
             color: white;
+        }
+
+        /* Highlighted verse (selected verse border) */
+        .verse.selected {
+            border: 2px solid #007bff;
+            background-color: rgba(0, 123, 255, 0.1);
         }
 
         /* Notification */
@@ -280,7 +287,9 @@
                     </div>`;
             } else if (localStorage.getItem('languageMode') === 'english') {
                 verseContent = `
-                    <div class="translation-text">${translatedVerse}</div>`;
+                    <div class="translation-text">${translatedVerse}
+                        <span class="verse-number">${i}</span>
+                    </div>`;
             } else {
                 verseContent = `
                     <div class="arabic-text">${arabicVerse}
@@ -302,12 +311,12 @@
         // Remove highlight from all verses
         const allVerses = document.querySelectorAll('.verse');
         allVerses.forEach(verse => {
-            verse.classList.remove('highlighted');
+            verse.classList.remove('selected');
         });
 
         // Add highlight to clicked verse
         const verseElement = document.getElementById(`verse-${verseId}`);
-        verseElement.classList.add('highlighted');
+        verseElement.classList.add('selected');
     }
 
     function toggleLanguage() {
