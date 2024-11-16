@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quran Surahs</title>
 
+    <!-- Link to PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
     <!-- Link to Font Awesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
@@ -22,7 +25,7 @@
             font-family: 'Arial', sans-serif;
             background-color: #f4f6f8;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.1;
             overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
@@ -35,7 +38,7 @@
         /* Header Styles */
         header {
             color: white;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
             font-size: 2rem;
         }
@@ -45,8 +48,8 @@
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 30px;
-            padding: 0 20px;
+            margin-top: 0px;
+            padding: 0 10px;
         }
 
         .controls input, .controls select {
@@ -150,35 +153,6 @@
             outline: none;
         }
 
-        /* Responsive Layout */
-        @media (max-width: 768px) {
-            header {
-                font-size: 1.8rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                gap: 10px;
-                padding: 0 10px;
-            }
-
-            .controls input, .controls select {
-                width: 100%;
-            }
-
-            .surah-item {
-                font-size: 0.9em; /* Smaller font size for smaller devices */
-            }
-
-            .surah-title {
-                font-size: 1.1em;
-            }
-
-            .surah-arabic {
-                font-size: 1.3em;
-            }
-        }
-
         /* Settings Section */
         .settings-container {
             display: flex;
@@ -211,26 +185,19 @@
 </head>
 <body>
 
-    <header>
-        Quran Surahs
-    </header>
-
     <!-- Settings Section at the top (Fixed) -->
     <div class="settings-container">
         <div class="settings-item" onclick="toggleTheme()">
-            <i class="fas fa-adjust"></i>
+            <i class="fas fa-adjust"></i> <!-- Dark/Light Mode toggle -->
         </div>
-    </div>
+        <div class="settings-item" onclick="installPWA()">
+            <i class="fas fa-download"></i> <!-- Install App -->
+       </div>
 
-    <!-- Search and Sort Controls -->
     <div class="controls">
         <input type="text" id="search-input" placeholder="Search Surahs..." oninput="filterSurahs()">
-        <select id="sort-select" onchange="sortSurahs()">
-            <option value="index">Sort by Surah Number</option>
-            <option value="type">Sort by Type</option>
-        </select>
     </div>
-
+    </div>
     <!-- Surah List -->
     <div id="surah-list">
         <!-- Surah items will be dynamically populated here -->
@@ -238,13 +205,15 @@
 
     <script>
         let surahData = [];
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
 
-        // Fetch the Surah data from the provided JSON URL
+        // Fetch Surah data
         fetch('https://raw.githubusercontent.com/itzfew/Quranv2/main/source/surah.json')
             .then(response => response.json())
             .then(data => {
-                surahData = data;  // Store the fetched data
-                renderSurahs(surahData); // Initially render all Surahs
+                surahData = data; 
+                renderSurahs(surahData); 
             })
             .catch(error => {
                 console.error("Error loading Surah data:", error);
@@ -258,7 +227,6 @@
             surahList.forEach(surah => {
                 const surahItem = document.createElement('div');
                 surahItem.classList.add('surah-item');
-
                 surahItem.innerHTML = `
                     <div class="surah-title">${surah.title}</div>
                     <div class="surah-arabic">${surah.titleAr}</div>
@@ -269,7 +237,6 @@
                     </div>
                 `;
 
-                // Make the Surah card clickable and navigate to the specific Surah
                 surahItem.onclick = function() {
                     window.location.href = `surah.html?index=${surah.index}`;
                 };
@@ -278,7 +245,7 @@
             });
         }
 
-        // Function to filter Surahs based on search input
+        // Function to filter Surahs
         function filterSurahs() {
             const searchTerm = document.getElementById("search-input").value.toLowerCase();
             const filteredSurahs = surahData.filter(surah => 
@@ -289,24 +256,43 @@
             renderSurahs(filteredSurahs);  // Re-render filtered Surahs
         }
 
-        // Function to toggle dark mode
+        // Toggle Dark/Light Mode
         function toggleTheme() {
             const isDark = document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', isDark);
         }
 
-        // Function to sort Surahs based on selected option
-        function sortSurahs() {
-            const sortBy = document.getElementById("sort-select").value;
-            let sortedSurahs = [];
+        // Function to handle PWA installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
 
-            if (sortBy === "index") {
-                sortedSurahs = surahData.sort((a, b) => parseInt(a.index) - parseInt(b.index));
-            } else if (sortBy === "type") {
-                sortedSurahs = surahData.sort((a, b) => a.type.localeCompare(b.type));
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the A2HS prompt');
+                    } else {
+                        console.log('User dismissed the A2HS prompt');
+                    }
+                });
+                deferredPrompt = null;
             }
+        }
 
-            renderSurahs(sortedSurahs);  // Re-render sorted Surahs
+        // Register Service Worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
         }
     </script>
 
