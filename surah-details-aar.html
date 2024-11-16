@@ -6,14 +6,16 @@
     <title>Quran Kareem (Ar)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            font-family: 'Amiri', serif;
-            background-color: white;
-            color: black;
-            margin: 0;
-            padding: 0;
-            font-size: 18px;
-        }
+            /* General body styles */
+    body {
+        font-family: 'Amiri', serif;
+        background-color: white;
+        color: black;
+        margin: 0;
+        padding: 0;
+        font-size: 18px;
+    }
+
 
         /* Settings Section */
         .settings-container {
@@ -91,17 +93,111 @@
             margin-top: 5px;
             text-align: left;
         }
+        
+    /* Dark mode styles */
+    .dark-mode {
+        background-color: black;
+        color: white;
+    }
 
-        /* Dark mode styles */
-        .dark-mode {
-            background-color: black;
-            color: white;
-        }
+    .dark-mode .verse {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: white;
+    }
 
-        .dark-mode .verse {
-            background-color: rgba(0, 0, 0, 0.1);
-            color: white;
+    /* Surah heading style */
+    .surah-heading {
+        font-size: 1.7em;
+        padding: 5px;
+        color: black;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    /* Surah heading in dark mode */
+    .dark-mode .surah-heading {
+        color: white;  /* Ensure Surah heading is white in dark mode */
+    }
+
+    /* First verse style */
+    .first-verse {
+        text-align: center;
+        font-size: 1.0em;
+        margin: 5px 0;
+        padding: 0px;
+        color: black;
+        font-weight: bold;
+        direction: rtl;
+    }
+
+    /* First verse in dark mode */
+    .dark-mode .first-verse {
+        color: white;  /* Ensure the first verse is white in dark mode */
+    }
+
+    /* Verse styles */
+    .verse {
+        margin: 5px 0;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: transparent;
+        color: black;
+        font-size: 1.2em;
+        width: 100%;
+        box-sizing: border-box;
+        direction: rtl;
+        text-align: right;
+        cursor: pointer;
+    }
+
+    .verse:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Highlighted verse (selected verse border) */
+    .verse.selected {
+        border: 2px solid #007bff;
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    /* Translation text styling */
+    .translation-text {
+        font-size: 0.8em;
+        color: #555;
+        margin-top: 5px;
+        text-align: left;
+    }
+
+    /* Back to Top button */
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .back-to-top:hover {
+        background-color: gray;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .settings-container {
+            padding: 10px;
         }
+        .settings-item {
+            font-size: 20px;
+        }
+    }
+
 
         /* Highlighted verse (selected verse border) */
         .verse.selected {
@@ -266,7 +362,7 @@
         content.innerHTML = ''; // Clear content
 
         surahHeading.innerText = arabicData.name;
-        firstVerse.innerText = translationVerses['verse_0'];  // Display translation of verse_0 separately
+        firstVerse.innerText = arabicVerses['verse_0'];  // Display translation of verse_0 separately
 
         // Loop through verses starting from verse_1
         for (let i = 1; i <= count; i++) {
