@@ -8,8 +8,8 @@
     <style>
         body {
             font-family: 'Amiri', serif;
-            background-color: white; 
-            color: black; 
+            background-color: white;
+            color: black;
             margin: 0;
             padding: 0;
             font-size: 18px;
@@ -43,7 +43,7 @@
         .surah-heading {
             font-size: 1.7em;
             padding: 5px;
-            color: black; 
+            color: black;
             text-transform: uppercase;
             font-weight: bold;
             letter-spacing: 1px;
@@ -65,7 +65,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            background-color: transparent; 
+            background-color: transparent;
             color: black;
             font-size: 1.5em;
             width: 100%;
@@ -177,6 +177,10 @@
     <div class="settings-item" onclick="resetPreferences()">
         <i class="fas fa-undo"></i>
     </div>
+    <!-- Language Toggle -->
+    <div class="settings-item" onclick="toggleLanguage()">
+        <i class="fas fa-language"></i>
+    </div>
 </div>
 
 <!-- Main Content -->
@@ -197,6 +201,7 @@
         const darkMode = localStorage.getItem('darkMode') === 'true';
         const textSize = localStorage.getItem('textSize') || '18';
         const selectedFont = localStorage.getItem('selectedFont') || 'Amiri';
+        const languageMode = localStorage.getItem('languageMode') || 'both'; // Default to both Arabic and English
 
         if (darkMode) {
             document.body.classList.add('dark-mode');
@@ -206,6 +211,7 @@
         document.body.style.fontFamily = selectedFont;
 
         document.getElementById('fontSelect').value = selectedFont;
+        setLanguageMode(languageMode);
 
         // Fetch Surah based on URL parameter if provided
         const index = getQueryParam('index');
@@ -227,6 +233,19 @@
         displaySurah(arabicData, translationData);
     }
 
+    function setLanguageMode(languageMode) {
+        localStorage.setItem('languageMode', languageMode);
+        if (languageMode === 'arabic') {
+            document.body.classList.add('arabic-only');
+            document.body.classList.remove('english-only');
+        } else if (languageMode === 'english') {
+            document.body.classList.add('english-only');
+            document.body.classList.remove('arabic-only');
+        } else {
+            document.body.classList.remove('english-only', 'arabic-only');
+        }
+    }
+
     function displaySurah(arabicData, translationData) {
         const surahHeading = document.getElementById('surah-heading');
         const firstVerse = document.getElementById('first-verse');
@@ -243,19 +262,34 @@
         firstVerse.innerText = translationVerses['verse_0'];  // Display translation of verse_0 separately
 
         // Loop through verses starting from verse_1
-        for (let i = 1; i <= count; i++) {  // Start the loop from 1 to avoid duplicating verse_0
+        for (let i = 1; i <= count; i++) {
             const arabicVerse = arabicVerses[`verse_${i}`];
             const translatedVerse = translationVerses[`verse_${i}`];
 
             const verseDiv = document.createElement('div');
             verseDiv.classList.add('verse');
             verseDiv.setAttribute('id', `verse-${i}`);
-            verseDiv.innerHTML = `
-                <div class="arabic-text">${arabicVerse}
-                    <span class="verse-number">${i}</span>
-                </div>
-                <div class="translation-text">${translatedVerse}</div>
-            `;
+            
+            let verseContent = '';
+
+            // Depending on the language mode, display only Arabic, English, or both
+            if (localStorage.getItem('languageMode') === 'arabic') {
+                verseContent = `
+                    <div class="arabic-text">${arabicVerse}
+                        <span class="verse-number">${i}</span>
+                    </div>`;
+            } else if (localStorage.getItem('languageMode') === 'english') {
+                verseContent = `
+                    <div class="translation-text">${translatedVerse}</div>`;
+            } else {
+                verseContent = `
+                    <div class="arabic-text">${arabicVerse}
+                        <span class="verse-number">${i}</span>
+                    </div>
+                    <div class="translation-text">${translatedVerse}</div>`;
+            }
+
+            verseDiv.innerHTML = verseContent;
 
             // Add event listener to highlight verse
             verseDiv.onclick = () => toggleHighlight(i);
@@ -274,6 +308,13 @@
         // Add highlight to clicked verse
         const verseElement = document.getElementById(`verse-${verseId}`);
         verseElement.classList.add('highlighted');
+    }
+
+    function toggleLanguage() {
+        const currentMode = localStorage.getItem('languageMode');
+        const newMode = currentMode === 'arabic' ? 'english' : currentMode === 'english' ? 'both' : 'arabic';
+        setLanguageMode(newMode);
+        fetchSurah(getQueryParam('index') || 1); // Reload the surah with the updated language mode
     }
 
     function scrollToTop() {
@@ -301,6 +342,7 @@
         localStorage.removeItem('darkMode');
         localStorage.removeItem('textSize');
         localStorage.removeItem('selectedFont');
+        localStorage.removeItem('languageMode');
         location.reload();
     }
 </script>
