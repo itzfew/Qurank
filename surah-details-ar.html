@@ -36,6 +36,7 @@
             margin-right: 20px;
             font-size: 24px;
             cursor: pointer;
+            color: black; /* Default color for settings items */
         }
 
         /* Header and Surah Styling */
@@ -97,10 +98,29 @@
 
         .dark-mode .verse {
             background-color: rgba(0, 0, 0, 0.1);
+            color: white; /* Change verse text color */
         }
 
-        .dark-mode .first-verse, .dark-mode .surah-heading {
+        .dark-mode .first-verse, 
+        .dark-mode .surah-heading {
             color: white;
+        }
+
+        .dark-mode .settings-item {
+            color: white; /* Change settings item text color */
+        }
+
+        .dark-mode .settings-container {
+            background-color: #333; /* Dark background for settings */
+        }
+
+        .dark-mode .back-to-top {
+            background-color: #555;
+            color: white;
+        }
+
+        .dark-mode .back-to-top:hover {
+            background-color: #888;
         }
 
         /* Highlighted verse (selected verse border) */
@@ -108,23 +128,21 @@
             border: 2px solid #007bff;
             background-color: rgba(0, 123, 255, 0.1);
         }
+   .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: black;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-        /* Back to Top button */
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: black;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .back-to-top:hover {
-            background-color: gray;
-        }
+    .back-to-top:hover {
+        background-color: gray;
+    }
 
         /* Responsive Design */
         @media (max-width: 768px) {
