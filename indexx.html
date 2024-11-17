@@ -15,7 +15,7 @@
             display: flex;
             justify-content: center;
             flex-direction: column;
-            padding-top: 0px; /* Adjusted for fixed navbar */
+            padding-top: 20px; /* Adjusted for fixed navbar */
       }
         /* Section Styles */
 .section {
@@ -154,20 +154,41 @@
             }
 
          
+        /* Settings Section */
+        .settings-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #f0f0f0;
+        }
+
+        .settings-item {
+            margin-right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: black; /* Default color for settings items */
+        }
+
     </style>
 </head>
 <body>
 
     <!-- Side Menu (Slides In) -->
-    <div id="myMenu" class="menu">
-        <a href="quran.html"><i class="fas fa-book"></i> Quran Kareem</a>
-        <a href="verse.html"><i class="fas fa-headphones"></i> Quran (verse with Audio)</a>
-        <a href="hadith.html"><i class="fas fa-book-open"></i> Hadith</a>
-        <a href="prayer.html"><i class="fas fa-pray"></i> Prayer</a>
-        <a href="tasbih.html"><i class="fas fa-spell-check"></i> Tasbih</a>
-        <a href="99-names.html"><i class="fas fa-users"></i> 99 Names</a>
-        <a href="https://apk.e-droid.net/apk/app3364616-cidhno.apk?v=3"><i class="fas fa-download"></i> Download Apk</a>
-    </div>
+    <div class="settings-container">
+      <a href="quran.html" class="settings-item"><i class="fas fa-book"></i> </a><!-- Quran kareem -->
+      <a href="verse.html" class="settings-item"><i class="fas fa-headphones"></i> </a><!-- Quran kareem -->
+      <a href="hadith.html" class="settings-item"><i class="fas fa-book-open"></i> </a><!-- Quran kareem -->
+      <a href="tasbih.html" class="settings-item"><i class="fas fa-spell-check"></i> </a><!-- Quran kareem -->
+      <a href="99-names.html" class="settings-item"><i class="fas fa-users"></i> </a><!-- Quran kareem -->
+       <a href="prayer.html" class="settings-item"><i class="fas fa-pray"></i> </a><!-- Quran kareem -->
+      
+         </div>
 
     <!-- Prayer Times Section -->
     <div class="section">
