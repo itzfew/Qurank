@@ -15,63 +15,63 @@
             display: flex;
             justify-content: center;
             flex-direction: column;
-            padding-top: 20px; /* Adjusted for fixed navbar */
-      }
+            padding-top: 80px; /* Adjusted for fixed navbar */
+        }
+
         /* Section Styles */
-.section {
-    width: 100%;
-    max-width: 900px;
-    background: #ffffff;
-    margin-bottom: 20px;
-    padding: 20px;
-    box-sizing: border-box;
-    position: relative;
-    border-radius: 8px;
-    /* Removed 3D effect (no box-shadow, no transform) */
-}
+        .section {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            border-radius: 8px;
+            /* Removed 3D effect (no box-shadow, no transform) */
+        }
 
-/* Copy Button */
-.copy-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background-color: #3498db;
-    border: 1px solid #3498db;
-    color: white;
-    padding: 8px 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    /* Removed hover effect */
-}
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background-color: #3498db;
+            border: 1px solid #3498db;
+            color: white;
+            padding: 8px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
 
-/* Verse and Hadith */
-.verse, .hadith {
-    font-size: 1rem;
-    color: #333;
-    padding: 15px;
-    border-radius: 8px;
-    background: #fafafa;
-    text-align: left;
-    overflow-y: auto;
-    max-height: 300px;
-    box-sizing: border-box;
-    margin-top: 15px;
-}
+        /* Verse and Hadith */
+        .verse, .hadith {
+            font-size: 1rem;
+            color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+            text-align: left;
+            overflow-y: auto;
+            max-height: 300px;
+            box-sizing: border-box;
+            margin-top: 15px;
+        }
 
-.verse p, .hadith p {
-    margin: 12px 0;
-    line-height: 1.6;
-}
+        .verse p, .hadith p {
+            margin: 12px 0;
+            line-height: 1.6;
+        }
 
-.verse-header, .hadith-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1rem;
-    margin-bottom: 5px;
-    color: #3498db;
-}
+        .verse-header, .hadith-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #3498db;
+        }
 
         /* Prayer Times Cards */
         .prayer-times-cards {
@@ -141,19 +141,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .section {
-                padding: 10px;
-                width: 100%;
-            }
-
-            .verse, .hadith {
-                font-size: 0.9rem;
-                padding: 12px;
-            }
-
-         
         /* Settings Section */
         .settings-container {
             display: flex;
@@ -166,15 +153,73 @@
             width: 100%;
             z-index: 1000;
             background-color: #f0f0f0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .settings-item {
             margin-right: 20px;
             font-size: 24px;
             cursor: pointer;
-            color: black; /* Default color for settings items */
+            color: black;
         }
 
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 60px; /* Adjusted for smaller screen */
+            }
+
+            .section {
+                padding: 10px;
+                width: 100%;
+            }
+
+            .verse, .hadith {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+
+            .prayer-times-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .prayer-time-card {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .settings-container {
+                padding: 15px 10px;
+            }
+
+            .settings-item {
+                font-size: 20px;
+            }
+        }
+
+        /* Small screen adjustments for side menu */
+        @media (max-width: 480px) {
+            .settings-item {
+                font-size: 18px;
+                margin-right: 15px;
+            }
+
+            .copy-btn {
+                font-size: 1rem;
+                padding: 6px 8px;
+            }
+
+            .prayer-time-card h3 {
+                font-size: 1rem;
+            }
+
+            .prayer-time-card p {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -183,12 +228,11 @@
     <div class="settings-container">
       <a href="quran.html" class="settings-item"><i class="fas fa-book"></i> </a><!-- Quran kareem -->
       <a href="verse.html" class="settings-item"><i class="fas fa-headphones"></i> </a><!-- Quran kareem -->
-      <a href="hadith.html" class="settings-item"><i class="fas fa-book-open"></i> </a><!-- Quran kareem -->
-      <a href="tasbih.html" class="settings-item"><i class="fas fa-spell-check"></i> </a><!-- Quran kareem -->
-      <a href="99-names.html" class="settings-item"><i class="fas fa-users"></i> </a><!-- Quran kareem -->
-       <a href="prayer.html" class="settings-item"><i class="fas fa-pray"></i> </a><!-- Quran kareem -->
-      
-         </div>
+      <a href="hadith.html" class="settings-item"><i class="fas fa-book-open"></i> </a><!-- Hadith -->
+      <a href="tasbih.html" class="settings-item"><i class="fas fa-spell-check"></i> </a><!-- Tasbih -->
+      <a href="99-names.html" class="settings-item"><i class="fas fa-users"></i> </a><!-- 99 Names -->
+      <a href="prayer.html" class="settings-item"><i class="fas fa-pray"></i> </a><!-- Prayer Times -->
+    </div>
 
     <!-- Prayer Times Section -->
     <div class="section">
@@ -216,7 +260,6 @@
             </div>
         </div>
     </div>
-
     <!-- Quranic Verse Section -->
     <div class="section">
         <div class="verse-header">
@@ -241,7 +284,7 @@
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "550d29a41ac54376bd18fcba4166eec3"}'></script><!-- End Cloudflare Web Analytics -->
 
     <script>
-       
+        
 // Function to fetch prayer times
 function fetchPrayerTimes(latitude, longitude) {
     const apiUrl = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=2`;
@@ -434,6 +477,5 @@ function convertTo12HourFormat(timeStr) {
         fetchRandomVerse();
         fetchRandomHadith();
     </script>
-
 </body>
 </html>
