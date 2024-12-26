@@ -53,6 +53,13 @@
       border-radius: 3px;
       z-index: 10;
     }
+    .translation {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+      direction: ltr; /* Left to right for English text */
+    }
   </style>
 </head>
 <body>
@@ -131,10 +138,39 @@
 
           // Append the verse item to the container
           container.appendChild(verseElement);
+
+          // Now fetch and display the English translation for this Surah and Ayah
+          const surahNumber = verse.surah;
+          const ayahNumber = verse.ayah;
+          const translation = await fetchTranslation(surahNumber, ayahNumber);
+          const translationElement = document.createElement('div');
+          translationElement.classList.add('translation');
+          translationElement.textContent = translation;
+          verseElement.appendChild(translationElement);
         }
 
       } catch (error) {
         console.error('Error fetching the data:', error);
+      }
+    }
+
+    // Fetch the translation for the specific Surah and Ayah
+    async function fetchTranslation(surahNumber, ayahNumber) {
+      try {
+        const surahResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${surahNumber}.json`);
+        const surahData = await surahResponse.json();
+        
+        // Get the correct verse and translation
+        const verseKey = `verse_${ayahNumber - 1}`; // Adjust to 0-indexed JSON
+        const arabicVerse = surahData.verse[verseKey];
+
+        // If translation data is available, we add it here
+        const englishTranslation = arabicVerse || "Translation not available.";
+        return englishTranslation;
+        
+      } catch (error) {
+        console.error('Error fetching translation:', error);
+        return "Translation not found.";
       }
     }
 
