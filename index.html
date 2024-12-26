@@ -1,92 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quran Words with Surah and Ayah</title>
+  <title>Quranic Verses</title>
   <style>
     body {
-      font-family: 'Tahoma', 'Arial', sans-serif;
-      background-color: #f4f4f9;
+      font-family: 'Arial', sans-serif;
+      background-color: #fff;
+      color: #000;
       margin: 0;
       padding: 20px;
       text-align: center;
+      direction: rtl; /* Right to Left for Arabic text */
     }
     h1 {
-      color: #333;
+      color: #000;
+      font-size: 24px;
+      margin-bottom: 20px;
     }
     .verse-container {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
-      padding: 20px;
+      gap: 20px;
     }
     .verse-item {
-      background-color: #4CAF50;
-      color: white;
       padding: 10px;
-      border-radius: 5px;
       font-size: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       text-align: center;
+      line-height: 1.5;
+      margin-bottom: 20px;
     }
     .word {
       display: inline-block;
-      padding: 5px;
-      background-color: #f0ad4e;
-      color: white;
-      border-radius: 3px;
+      margin: 0 5px;
       cursor: pointer;
-      font-size: 16px;
-      margin: 2px;
+      font-size: 22px;
+      padding: 5px;
     }
     .word:hover {
-      background-color: #d9534f;
+      color: #000;
     }
-    .popup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+    /* Tooltip Style */
+    .tooltip {
       display: none;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 18px;
-    }
-    .popup-content {
-      background: #333;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-    }
-    .close-btn {
-      background: red;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    .close-btn:hover {
-      background: darkred;
+      position: absolute;
+      background-color: #fff;
+      color: #000;
+      padding: 3px 8px;
+      border: 1px solid #000;
+      font-size: 14px;
+      border-radius: 3px;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <h1>Quranic Verses</h1>
+  <h1>الآيات القرآنية</h1>
   <div id="verseContainer" class="verse-container"></div>
 
-  <!-- Popup for translation -->
-  <div id="popup" class="popup">
-    <div class="popup-content">
-      <p id="wordTranslation">Loading...</p>
-      <button id="closePopup" class="close-btn">Close</button>
-    </div>
-  </div>
+  <div id="tooltip" class="tooltip"></div> <!-- Tooltip container -->
 
   <script>
     async function loadQuranData() {
@@ -141,13 +114,7 @@
           const verseElement = document.createElement('div');
           verseElement.classList.add('verse-item');
           
-          // Verse Header (Surah and Ayah)
-          const verseHeader = document.createElement('div');
-          verseHeader.classList.add('verse-header');
-          verseHeader.textContent = `Surah ${verse.surah}, Ayah ${verse.ayah}`;
-          verseElement.appendChild(verseHeader);
-
-          // Combine the words and make them clickable
+          // Verse Text in Arabic
           const verseWordsContainer = document.createElement('div');
           verse.words.forEach((word, index) => {
             const wordElement = document.createElement('span');
@@ -156,7 +123,7 @@
             wordElement.setAttribute('data-index', index);
 
             // Add click event listener to fetch translation
-            wordElement.addEventListener('click', () => showTranslation(word, index, translationData));
+            wordElement.addEventListener('click', (event) => showTranslation(event, index, translationData));
 
             verseWordsContainer.appendChild(wordElement);
           });
@@ -171,23 +138,26 @@
       }
     }
 
-    // Function to show translation in popup
-    function showTranslation(word, index, translationData) {
+    // Function to show translation next to the clicked word
+    function showTranslation(event, index, translationData) {
       const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
-      const popup = document.getElementById('popup');
-      const wordTranslation = document.getElementById('wordTranslation');
       
-      // Set the translation text in the popup
-      wordTranslation.textContent = `Translation of "${word}": ${translation}`;
+      const tooltip = document.getElementById('tooltip');
+      tooltip.textContent = translation;  // Set the translation text
 
-      // Display the popup
-      popup.style.display = 'flex';
+      // Position the tooltip next to the clicked word
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.top = `${rect.top + window.scrollY - 30}px`;  // Adjust position above the word
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width + 5}px`;  // Adjust position to the right of the word
+
+      // Show the tooltip
+      tooltip.style.display = 'block';
+
+      // Hide the tooltip when mouse leaves the word
+      event.target.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
     }
-
-    // Close popup when clicking close button
-    document.getElementById('closePopup').addEventListener('click', () => {
-      document.getElementById('popup').style.display = 'none';
-    });
 
     // Load Quran data when the page is ready
     loadQuranData();
