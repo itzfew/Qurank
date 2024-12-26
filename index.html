@@ -42,7 +42,8 @@
     .verse-number {
       font-size: 24px;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-top: 10px;
+      color: #333;
     }
 
     .word {
@@ -85,7 +86,7 @@
   </style>
 </head>
 <body>
-  <h1>الآيات القرآنية</h1>
+  <h1> Al-Quran </h1>
   <div id="verseContainer" class="verse-container"></div>
 
   <div id="tooltip" class="tooltip"></div>
@@ -173,7 +174,7 @@
           // Add Verse Number
           const verseNumberElement = document.createElement('div');
           verseNumberElement.classList.add('verse-number');
-          verseNumberElement.textContent = `آية ${verse.ayah}`;
+          verseNumberElement.textContent = `(${verse.ayah})`;  // Verse numbering at the end of the English translation
           verseElement.appendChild(verseNumberElement);
 
           // Verse Text in Arabic
@@ -184,7 +185,7 @@
             wordElement.textContent = word;
             wordElement.setAttribute('data-index', index);
 
-            // Add click event listener to fetch translation
+            // Add click event listener to toggle word highlight
             wordElement.addEventListener('click', (event) => toggleWordHighlight(event, index, translationData));
 
             verseWordsContainer.appendChild(wordElement);
@@ -209,7 +210,16 @@
 
     // Function to toggle highlight on clicked word
     function toggleWordHighlight(event, index, translationData) {
-      event.target.classList.toggle('clicked');
+      // Remove highlight from the previously clicked word
+      const previousClicked = document.querySelector('.word.clicked');
+      if (previousClicked) {
+        previousClicked.classList.remove('clicked');
+      }
+
+      // Add highlight to the clicked word
+      event.target.classList.add('clicked');
+
+      // Show translation for the clicked word
       showTranslation(event, index, translationData);
     }
 
@@ -236,7 +246,7 @@
     // Function to show translation next to the clicked word
     function showTranslation(event, index, translationData) {
       const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
-      
+
       const tooltip = document.getElementById('tooltip');
       tooltip.textContent = translation;  // Set the translation text
 
