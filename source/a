@@ -163,26 +163,18 @@
     loadQuranData();
   </script>
 </body>
-</html>Show english translation below arabic verse respectively from https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah/surah_1.json it is for Surah 1 ... for Surah 2 replace 1 by 2 and so on.. in this here how it is: {
-    "index": "001",
+</html>Show english translation below arabic verse respectively from https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_1.json it is for Surah 1 ... for Surah 2 replace 1 by 2 and so on.. in this here how it is:
+{
     "name": "al-Fatihah",
+    "index": "001",
     "verse": {
-        "verse_0": "﻿بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
-        "verse_1": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ",
-        "verse_2": "ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
-        "verse_3": "مَٰلِكِ يَوْمِ ٱلدِّينِ",
-        "verse_4": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-        "verse_5": "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ",
-        "verse_6": "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ"
+        "verse_0": "In the name of God, the Gracious, the Merciful.",
+        "verse_1": "Praise be to God, Lord of the Worlds.",
+        "verse_2": "The Most Gracious, the Most Merciful.",
+        "verse_3": "Master of the Day of Judgment.",
+        "verse_4": "It is You we worship, and upon You we call for help.",
+        "verse_5": "Guide us to the straight path.",
+        "verse_6": "The path of those You have blessed, not of those against whom there is anger, nor of those who are misguided."
     },
-    "count": 6,
-    "juz": [
-        {
-            "index": "01",
-            "verse": {
-                "start": "verse_1",
-                "end": "verse_6"
-            }
-        }
-    ]
+    "count": 6
 } .. and so on...
