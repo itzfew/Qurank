@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quranic Verses</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fff;
+      color: #000;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      direction: rtl; /* Right to Left for Arabic text */
+    }
+    h1 {
+      color: #000;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .verse-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .verse-item {
+      padding: 10px;
+      font-size: 20px;
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .word {
+      display: inline-block;
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 22px;
+      padding: 5px;
+    }
+    .word:hover {
+      color: #000;
+    }
+    /* Tooltip Style */
+    .tooltip {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      color: #000;
+      padding: 3px 8px;
+      border: 1px solid #000;
+      font-size: 14px;
+      border-radius: 3px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <h1>الآيات القرآنية</h1>
+  <div id="verseContainer" class="verse-container"></div>
 
+  <div id="tooltip" class="tooltip"></div> <!-- Tooltip container -->
+
+  <script>
+    async function loadQuranData() {
+      try {
+        // Fetch the words data (indopak-qurancom.json)
+        const wordsResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/indopak-qurancom.json');
+        const wordsData = await wordsResponse.json();
+
+        // Fetch the verse metadata (word.json)
+        const metadataResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/word.json');
+        const metadataData = await metadataResponse.json();
+
+        // Fetch the translation data (en-qurancom.json)
+        const translationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
+        const translationData = await translationResponse.json();
+
+        // Get the container to display the verses
+        const container = document.getElementById('verseContainer');
+
+        // Combine the word data with the verse metadata
+        const verses = {};
+
+        // Loop through each word data and organize them into verses
+        for (const key in wordsData) {
+          if (wordsData.hasOwnProperty(key) && metadataData.hasOwnProperty(key)) {
+            const word = wordsData[key];
+            const metadata = metadataData[key];
+
+            // Get Surah and Ayah
+            const surah = metadata.surah;
+            const ayah = metadata.ayah;
+            const position = metadata.position;
+
+            // Initialize verse if not already created
+            const verseKey = `${surah}:${ayah}`;
+            if (!verses[verseKey]) {
+              verses[verseKey] = {
+                surah: surah,
+                ayah: ayah,
+                words: [],
+              };
+            }
+
+            // Add the word to the verse's words array
+            verses[verseKey].words[position] = word;  // This maintains the order of words
+          }
+        }
+
+        // Now that we have organized the words in verses, let's display them
+        for (const verseKey in verses) {
+          const verse = verses[verseKey];
+          const verseElement = document.createElement('div');
+          verseElement.classList.add('verse-item');
+          
+          // Verse Text in Arabic
+          const verseWordsContainer = document.createElement('div');
+          verse.words.forEach((word, index) => {
+            const wordElement = document.createElement('span');
+            wordElement.classList.add('word');
+            wordElement.textContent = word;
+            wordElement.setAttribute('data-index', index);
+
+            // Add click event listener to fetch translation
+            wordElement.addEventListener('click', (event) => showTranslation(event, index, translationData));
+
+            verseWordsContainer.appendChild(wordElement);
+          });
+          verseElement.appendChild(verseWordsContainer);
+
+          // Append the verse item to the container
+          container.appendChild(verseElement);
+        }
+
+      } catch (error) {
+        console.error('Error fetching the data:', error);
+      }
+    }
+
+    // Function to show translation next to the clicked word
+    function showTranslation(event, index, translationData) {
+      const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
+      
+      const tooltip = document.getElementById('tooltip');
+      tooltip.textContent = translation;  // Set the translation text
+
+      // Position the tooltip next to the clicked word
+      const rect = event.target.getBoundingClientRect();
+      tooltip.style.top = `${rect.top + window.scrollY - 30}px`;  // Adjust position above the word
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width + 5}px`;  // Adjust position to the right of the word
+
+      // Show the tooltip
+      tooltip.style.display = 'block';
+
+      // Hide the tooltip when mouse leaves the word
+      event.target.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
+    }
+
+    // Load Quran data when the page is ready
+    loadQuranData();
+  </script>
+</body>
+</html>Show english translation below arabic verse respectively from https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah/surah_1.json it is for Surah 1 ... for Surah 2 replace 1 by 2 and so on.. in this here how it is: {
+    "index": "001",
+    "name": "al-Fatihah",
+    "verse": {
+        "verse_0": "﻿بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+        "verse_1": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ",
+        "verse_2": "ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+        "verse_3": "مَٰلِكِ يَوْمِ ٱلدِّينِ",
+        "verse_4": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+        "verse_5": "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ",
+        "verse_6": "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ"
+    },
+    "count": 6,
+    "juz": [
+        {
+            "index": "01",
+            "verse": {
+                "start": "verse_1",
+                "end": "verse_6"
+            }
+        }
+    ]
+} .. and so on...
