@@ -6,31 +6,45 @@
   <title>Quranic Verses</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Amiri', serif; /* Use Amiri font for Arabic */
       background-color: #fff;
       color: #000;
       margin: 0;
       padding: 20px;
       text-align: center;
-      direction: rtl;
+      direction: rtl; /* Right to Left for Arabic text */
     }
+
+    /* Load Arabic font */
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
     h1 {
       color: #000;
       font-size: 24px;
       margin-bottom: 20px;
     }
+
     .verse-container {
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
     }
+
     .verse-item {
       padding: 10px;
       font-size: 20px;
       text-align: center;
       line-height: 1.5;
       margin-bottom: 20px;
+      border-bottom: 2px solid black; /* Separator line between verses */
     }
+
+    .verse-number {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
     .word {
       display: inline-block;
       margin: 0 5px;
@@ -38,9 +52,16 @@
       font-size: 22px;
       padding: 5px;
     }
+
+    .word.clicked {
+      color: #ff6347; /* Highlight the clicked word in tomato red */
+      background-color: #f0f0f0;
+    }
+
     .word:hover {
       color: #000;
     }
+
     .tooltip {
       display: none;
       position: absolute;
@@ -52,6 +73,7 @@
       border-radius: 3px;
       z-index: 10;
     }
+
     .translation {
       margin-top: 10px;
       font-size: 18px;
@@ -59,11 +81,13 @@
       text-align: center;
       direction: ltr;
     }
+
   </style>
 </head>
 <body>
-  <h1>الآيات القرآنية1</h1>
+  <h1>الآيات القرآنية</h1>
   <div id="verseContainer" class="verse-container"></div>
+
   <div id="tooltip" class="tooltip"></div>
 
   <script>
@@ -146,6 +170,12 @@
           const verseElement = document.createElement('div');
           verseElement.classList.add('verse-item');
 
+          // Add Verse Number
+          const verseNumberElement = document.createElement('div');
+          verseNumberElement.classList.add('verse-number');
+          verseNumberElement.textContent = `آية ${verse.ayah}`;
+          verseElement.appendChild(verseNumberElement);
+
           // Verse Text in Arabic
           const verseWordsContainer = document.createElement('div');
           verse.words.forEach((word, index) => {
@@ -155,7 +185,7 @@
             wordElement.setAttribute('data-index', index);
 
             // Add click event listener to fetch translation
-            wordElement.addEventListener('click', (event) => showTranslation(event, index, translationData));
+            wordElement.addEventListener('click', (event) => toggleWordHighlight(event, index, translationData));
 
             verseWordsContainer.appendChild(wordElement);
           });
@@ -175,6 +205,12 @@
       } catch (error) {
         console.error('Error fetching the data:', error);
       }
+    }
+
+    // Function to toggle highlight on clicked word
+    function toggleWordHighlight(event, index, translationData) {
+      event.target.classList.toggle('clicked');
+      showTranslation(event, index, translationData);
     }
 
     // Fetch the translation for the specific Surah and Ayah
