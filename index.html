@@ -30,24 +30,63 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
-    .english-translation {
-      background-color: #007bff;
-      color: white;
-      font-size: 16px;
+    .word {
+      display: inline-block;
       padding: 5px;
-      border-radius: 5px;
-      margin-top: 5px;
+      background-color: #f0ad4e;
+      color: white;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 2px;
     }
-    .verse-header {
-      font-weight: bold;
+    .word:hover {
+      background-color: #d9534f;
+    }
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      color: white;
       font-size: 18px;
-      color: #333;
+    }
+    .popup-content {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .close-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .close-btn:hover {
+      background: darkred;
     }
   </style>
 </head>
 <body>
   <h1>Quranic Verses</h1>
   <div id="verseContainer" class="verse-container"></div>
+
+  <!-- Popup for translation -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <p id="wordTranslation">Loading...</p>
+      <button id="closePopup" class="close-btn">Close</button>
+    </div>
+  </div>
 
   <script>
     async function loadQuranData() {
@@ -59,6 +98,10 @@
         // Fetch the verse metadata (word.json)
         const metadataResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/word.json');
         const metadataData = await metadataResponse.json();
+
+        // Fetch the translation data (en-qurancom.json)
+        const translationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
+        const translationData = await translationResponse.json();
 
         // Get the container to display the verses
         const container = document.getElementById('verseContainer');
@@ -84,7 +127,6 @@
                 surah: surah,
                 ayah: ayah,
                 words: [],
-                englishTranslation: "" // We will add translation later
               };
             }
 
@@ -105,17 +147,20 @@
           verseHeader.textContent = `Surah ${verse.surah}, Ayah ${verse.ayah}`;
           verseElement.appendChild(verseHeader);
 
-          // Combine the words and display the verse
-          const verseWords = verse.words.join(" ");  // Join words with a space
-          const verseText = document.createElement('div');
-          verseText.textContent = verseWords;
-          verseElement.appendChild(verseText);
+          // Combine the words and make them clickable
+          const verseWordsContainer = document.createElement('div');
+          verse.words.forEach((word, index) => {
+            const wordElement = document.createElement('span');
+            wordElement.classList.add('word');
+            wordElement.textContent = word;
+            wordElement.setAttribute('data-index', index);
 
-          // Optional: Add English translation (can fetch from another JSON if needed)
-          const englishTranslation = document.createElement('div');
-          englishTranslation.classList.add('english-translation');
-          englishTranslation.textContent = "Your English Translation here";  // You can replace this with actual translation data
-          verseElement.appendChild(englishTranslation);
+            // Add click event listener to fetch translation
+            wordElement.addEventListener('click', () => showTranslation(word, index, translationData));
+
+            verseWordsContainer.appendChild(wordElement);
+          });
+          verseElement.appendChild(verseWordsContainer);
 
           // Append the verse item to the container
           container.appendChild(verseElement);
@@ -125,6 +170,24 @@
         console.error('Error fetching the data:', error);
       }
     }
+
+    // Function to show translation in popup
+    function showTranslation(word, index, translationData) {
+      const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
+      const popup = document.getElementById('popup');
+      const wordTranslation = document.getElementById('wordTranslation');
+      
+      // Set the translation text in the popup
+      wordTranslation.textContent = `Translation of "${word}": ${translation}`;
+
+      // Display the popup
+      popup.style.display = 'flex';
+    }
+
+    // Close popup when clicking close button
+    document.getElementById('closePopup').addEventListener('click', () => {
+      document.getElementById('popup').style.display = 'none';
+    });
 
     // Load Quran data when the page is ready
     loadQuranData();
