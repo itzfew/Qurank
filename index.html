@@ -3,188 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quranic Surah and Translation</title>
+  <title>Quran Words with Surah and Ayah</title>
   <style>
     body {
-      font-family: 'Amiri', serif;
+      font-family: 'Tahoma', 'Arial', sans-serif;
+      background-color: #f4f4f9;
       margin: 0;
       padding: 20px;
-      background-color: #f4f4f4;
-    }
-
-    h1 {
       text-align: center;
-      color: #2C3E50;
-      margin-bottom: 20px;
     }
-
-    .surah-container {
-      margin-top: 20px;
+    h1 {
+      color: #333;
     }
-
-    .surah-item {
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-
-    .surah-title {
-      font-size: 24px;
-      font-weight: bold;
-      color: #3498db;
-    }
-
-    .surah-info {
-      margin-top: 10px;
-      font-size: 16px;
-      color: #34495e;
-    }
-
     .verse-container {
-      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 20px;
+    }
+    .verse-item {
+      background-color: #4CAF50;
+      color: white;
       padding: 10px;
-      background-color: #ecf0f1;
       border-radius: 5px;
+      font-size: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
-
-    .verse {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #bdc3c7;
-    }
-
-    .verse-number {
-      font-size: 18px;
-      color: #16a085;
-    }
-
-    .verse-text {
-      font-size: 18px;
-      flex: 1;
-      padding-left: 10px;
-    }
-
-    .verse-translation {
-      font-size: 16px;
-      color: #34495e;
-      margin-top: 5px;
-    }
-
-    .tooltip {
-      position: absolute;
-      background-color: #fff;
-      border: 1px solid #3498db;
+    .word {
+      display: inline-block;
       padding: 5px;
-      display: none;
-      font-size: 14px;
-      z-index: 10;
+      background-color: #f0ad4e;
+      color: white;
       border-radius: 3px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 2px;
     }
-
-    .highlighted {
-      background-color: #f1c40f;
-      color: #fff;
-      padding: 5px;
+    .word:hover {
+      background-color: #d9534f;
+    }
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 18px;
+    }
+    .popup-content {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .close-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .close-btn:hover {
+      background: darkred;
     }
   </style>
 </head>
 <body>
-  <h1>Quranic Surah and Translation</h1>
-  <div id="surahContainer" class="surah-container"></div>
-  <div id="tooltip" class="tooltip"></div>
+  <h1>Quranic Verses</h1>
+  <div id="verseContainer" class="verse-container"></div>
+
+  <!-- Popup for translation -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <p id="wordTranslation">Loading...</p>
+      <button id="closePopup" class="close-btn">Close</button>
+    </div>
+  </div>
 
   <script>
-    // Function to fetch Surah data
-    async function fetchSurahData() {
+    async function loadQuranData() {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah.json');
-        const surahData = await response.json();
-        displaySurahDetails(surahData);
-      } catch (error) {
-        console.error('Error fetching Surah data:', error);
-      }
-    }
+        // Fetch the words data (indopak-qurancom.json)
+        const wordsResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/indopak-qurancom.json');
+        const wordsData = await wordsResponse.json();
 
-    // Function to fetch Verse words data
-    async function fetchVerseWords(surahIndex) {
-      try {
-        const response = await fetch('https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/indopak-qurancom.json');
-        const verseWordsData = await response.json();
-        return verseWordsData;
-      } catch (error) {
-        console.error('Error fetching Verse words data:', error);
-      }
-    }
+        // Fetch the verse metadata (word.json)
+        const metadataResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/word.json');
+        const metadataData = await metadataResponse.json();
 
-    // Function to fetch English Translation for a Surah
-    async function fetchTranslation(surahIndex) {
-      try {
-        const response = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${surahIndex}.json`);
-        const translationData = await response.json();
-        return translationData;
-      } catch (error) {
-        console.error('Error fetching translation:', error);
-      }
-    }
+        // Fetch the translation data (en-qurancom.json)
+        const translationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
+        const translationData = await translationResponse.json();
 
-    // Function to display Surah details
-    function displaySurahDetails(surahData) {
-      const container = document.getElementById('surahContainer');
+        // Get the container to display the verses
+        const container = document.getElementById('verseContainer');
 
-      surahData.forEach(async (surah) => {
-        const surahElement = document.createElement('div');
-        surahElement.classList.add('surah-item');
+        // Combine the word data with the verse metadata
+        const verses = {};
 
-        const surahTitle = document.createElement('div');
-        surahTitle.classList.add('surah-title');
-        surahTitle.innerHTML = `${surah.titleAr} (${surah.title})`;
+        // Loop through each word data and organize them into verses
+        for (const key in wordsData) {
+          if (wordsData.hasOwnProperty(key) && metadataData.hasOwnProperty(key)) {
+            const word = wordsData[key];
+            const metadata = metadataData[key];
 
-        const surahInfo = document.createElement('div');
-        surahInfo.classList.add('surah-info');
-        surahInfo.innerHTML = `Place: ${surah.place}, Type: ${surah.type}, Pages: ${surah.pages}, Verse Count: ${surah.count}`;
+            // Get Surah and Ayah
+            const surah = metadata.surah;
+            const ayah = metadata.ayah;
+            const position = metadata.position;
 
-        surahElement.appendChild(surahTitle);
-        surahElement.appendChild(surahInfo);
-        container.appendChild(surahElement);
+            // Initialize verse if not already created
+            const verseKey = `${surah}:${ayah}`;
+            if (!verses[verseKey]) {
+              verses[verseKey] = {
+                surah: surah,
+                ayah: ayah,
+                words: [],
+              };
+            }
 
-        const verseWordsData = await fetchVerseWords(surah.index);
-        const translationData = await fetchTranslation(surah.index);
-
-        // Display verses for each Surah
-        for (let i = 0; i < surah.count; i++) {
-          const verseData = verseWordsData[`verse_${i + 1}`];
-          const translation = translationData.verse[`verse_${i}`];
-
-          const verseElement = document.createElement('div');
-          verseElement.classList.add('verse-container');
-
-          const verseNumber = document.createElement('div');
-          verseNumber.classList.add('verse-number');
-          verseNumber.innerHTML = `Verse ${i + 1}:`;
-
-          const verseText = document.createElement('div');
-          verseText.classList.add('verse-text');
-          verseText.innerHTML = verseData.join(' ');  // Join words to form the verse
-
-          const verseTranslation = document.createElement('div');
-          verseTranslation.classList.add('verse-translation');
-          verseTranslation.innerHTML = translation;
-
-          verseElement.appendChild(verseNumber);
-          verseElement.appendChild(verseText);
-          verseElement.appendChild(verseTranslation);
-
-          surahElement.appendChild(verseElement);
+            // Add the word to the verse's words array
+            verses[verseKey].words[position] = word;  // This maintains the order of words
+          }
         }
-      });
+
+        // Now that we have organized the words in verses, let's display them
+        for (const verseKey in verses) {
+          const verse = verses[verseKey];
+          const verseElement = document.createElement('div');
+          verseElement.classList.add('verse-item');
+          
+          // Verse Header (Surah and Ayah)
+          const verseHeader = document.createElement('div');
+          verseHeader.classList.add('verse-header');
+          verseHeader.textContent = `Surah ${verse.surah}, Ayah ${verse.ayah}`;
+          verseElement.appendChild(verseHeader);
+
+          // Combine the words and make them clickable
+          const verseWordsContainer = document.createElement('div');
+          verse.words.forEach((word, index) => {
+            const wordElement = document.createElement('span');
+            wordElement.classList.add('word');
+            wordElement.textContent = word;
+            wordElement.setAttribute('data-index', index);
+
+            // Add click event listener to fetch translation
+            wordElement.addEventListener('click', () => showTranslation(word, index, translationData));
+
+            verseWordsContainer.appendChild(wordElement);
+          });
+          verseElement.appendChild(verseWordsContainer);
+
+          // Append the verse item to the container
+          container.appendChild(verseElement);
+        }
+
+      } catch (error) {
+        console.error('Error fetching the data:', error);
+      }
     }
 
-    // Initialize the process
-    fetchSurahData();
+    // Function to show translation in popup
+    function showTranslation(word, index, translationData) {
+      const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
+      const popup = document.getElementById('popup');
+      const wordTranslation = document.getElementById('wordTranslation');
+      
+      // Set the translation text in the popup
+      wordTranslation.textContent = `Translation of "${word}": ${translation}`;
+
+      // Display the popup
+      popup.style.display = 'flex';
+    }
+
+    // Close popup when clicking close button
+    document.getElementById('closePopup').addEventListener('click', () => {
+      document.getElementById('popup').style.display = 'none';
+    });
+
+    // Load Quran data when the page is ready
+    loadQuranData();
   </script>
 </body>
 </html>
