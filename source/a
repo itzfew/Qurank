@@ -53,6 +53,13 @@
       border-radius: 3px;
       z-index: 10;
     }
+    .translation {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+      direction: ltr; /* Left to right for English text */
+    }
   </style>
 </head>
 <body>
@@ -131,10 +138,39 @@
 
           // Append the verse item to the container
           container.appendChild(verseElement);
+
+          // Now fetch and display the English translation for this Surah and Ayah
+          const surahNumber = verse.surah;
+          const ayahNumber = verse.ayah;
+          const translation = await fetchTranslation(surahNumber, ayahNumber);
+          const translationElement = document.createElement('div');
+          translationElement.classList.add('translation');
+          translationElement.textContent = translation;
+          verseElement.appendChild(translationElement);
         }
 
       } catch (error) {
         console.error('Error fetching the data:', error);
+      }
+    }
+
+    // Fetch the translation for the specific Surah and Ayah
+    async function fetchTranslation(surahNumber, ayahNumber) {
+      try {
+        const surahResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${surahNumber}.json`);
+        const surahData = await surahResponse.json();
+        
+        // Get the correct verse and translation
+        const verseKey = `verse_${ayahNumber - 1}`; // Adjust to 0-indexed JSON
+        const arabicVerse = surahData.verse[verseKey];
+
+        // If translation data is available, we add it here
+        const englishTranslation = arabicVerse || "Translation not available.";
+        return englishTranslation;
+        
+      } catch (error) {
+        console.error('Error fetching translation:', error);
+        return "Translation not found.";
       }
     }
 
@@ -163,18 +199,4 @@
     loadQuranData();
   </script>
 </body>
-</html>Show english translation below arabic verse respectively from https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_1.json it is for Surah 1 ... for Surah 2 replace 1 by 2 and so on.. in this here how it is:
-{
-    "name": "al-Fatihah",
-    "index": "001",
-    "verse": {
-        "verse_0": "In the name of God, the Gracious, the Merciful.",
-        "verse_1": "Praise be to God, Lord of the Worlds.",
-        "verse_2": "The Most Gracious, the Most Merciful.",
-        "verse_3": "Master of the Day of Judgment.",
-        "verse_4": "It is You we worship, and upon You we call for help.",
-        "verse_5": "Guide us to the straight path.",
-        "verse_6": "The path of those You have blessed, not of those against whom there is anger, nor of those who are misguided."
-    },
-    "count": 6
-} .. and so on...
+</html>
