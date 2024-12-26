@@ -12,7 +12,7 @@
       margin: 0;
       padding: 20px;
       text-align: center;
-      direction: rtl; /* Right to Left for Arabic text */
+      direction: rtl;
     }
     h1 {
       color: #000;
@@ -41,7 +41,6 @@
     .word:hover {
       color: #000;
     }
-    /* Tooltip Style */
     .tooltip {
       display: none;
       position: absolute;
@@ -58,38 +57,64 @@
       font-size: 18px;
       color: #333;
       text-align: center;
-      direction: ltr; /* Left to right for English text */
+      direction: ltr;
     }
   </style>
 </head>
 <body>
-  <h1>الآيات القرآنية</h1>
+  <h1>الآيات القرآنية1</h1>
   <div id="verseContainer" class="verse-container"></div>
-
-  <div id="tooltip" class="tooltip"></div> <!-- Tooltip container -->
+  <div id="tooltip" class="tooltip"></div>
 
   <script>
+    // Function to extract query parameter value by name
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
     async function loadQuranData() {
       try {
-        // Fetch the words data (indopak-qurancom.json)
+        // Fetch Surah metadata from the surah.json file
+        const surahResponse = await fetch('https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah.json');
+        const surahData = await surahResponse.json();
+
+        // Get the "index" parameter from the URL to determine which Surah to display
+        const surahIndex = getQueryParam('index');
+        if (!surahIndex) {
+          alert("No Surah index provided!");
+          return;
+        }
+
+        // Find the Surah that matches the index
+        const surahInfo = surahData.find(surah => surah.index === surahIndex);
+        if (!surahInfo) {
+          alert("Surah not found!");
+          return;
+        }
+
+        const surahNumber = surahInfo.index;
+        const verseStart = parseInt(surahInfo.juz[0].verse.start.split('_')[1], 10);  // e.g., 'verse_1' => 1
+        const verseEnd = parseInt(surahInfo.juz[0].verse.end.split('_')[1], 10);  // e.g., 'verse_7' => 7
+
+        // Fetch word data for this Surah
         const wordsResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/indopak-qurancom.json');
         const wordsData = await wordsResponse.json();
 
-        // Fetch the verse metadata (word.json)
+        // Fetch verse metadata
         const metadataResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/word.json');
         const metadataData = await metadataResponse.json();
 
-        // Fetch the translation data (en-qurancom.json)
+        // Fetch translation data
         const translationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
         const translationData = await translationResponse.json();
 
         // Get the container to display the verses
         const container = document.getElementById('verseContainer');
 
-        // Combine the word data with the verse metadata
+        // Filter words and metadata to include only the selected Surah
         const verses = {};
 
-        // Loop through each word data and organize them into verses
         for (const key in wordsData) {
           if (wordsData.hasOwnProperty(key) && metadataData.hasOwnProperty(key)) {
             const word = wordsData[key];
@@ -100,27 +125,27 @@
             const ayah = metadata.ayah;
             const position = metadata.position;
 
-            // Initialize verse if not already created
-            const verseKey = `${surah}:${ayah}`;
-            if (!verses[verseKey]) {
-              verses[verseKey] = {
-                surah: surah,
-                ayah: ayah,
-                words: [],
-              };
+            // Only process verses from the selected Surah
+            if (surah === parseInt(surahIndex)) {
+              const verseKey = `${surah}:${ayah}`;
+              if (!verses[verseKey]) {
+                verses[verseKey] = {
+                  surah: surah,
+                  ayah: ayah,
+                  words: [],
+                };
+              }
+              verses[verseKey].words[position] = word;
             }
-
-            // Add the word to the verse's words array
-            verses[verseKey].words[position] = word;  // This maintains the order of words
           }
         }
 
-        // Now that we have organized the words in verses, let's display them
+        // Display the verses for the selected Surah
         for (const verseKey in verses) {
           const verse = verses[verseKey];
           const verseElement = document.createElement('div');
           verseElement.classList.add('verse-item');
-          
+
           // Verse Text in Arabic
           const verseWordsContainer = document.createElement('div');
           verse.words.forEach((word, index) => {
@@ -140,9 +165,7 @@
           container.appendChild(verseElement);
 
           // Now fetch and display the English translation for this Surah and Ayah
-          const surahNumber = verse.surah;
-          const ayahNumber = verse.ayah;
-          const translation = await fetchTranslation(surahNumber, ayahNumber);
+          const translation = await fetchTranslation(verse.surah, verse.ayah);
           const translationElement = document.createElement('div');
           translationElement.classList.add('translation');
           translationElement.textContent = translation;
