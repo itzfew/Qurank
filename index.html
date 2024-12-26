@@ -65,138 +65,127 @@
 <body>
   <h1>الآيات القرآنية</h1>
   <div id="verseContainer" class="verse-container"></div>
-
   <div id="tooltip" class="tooltip"></div> <!-- Tooltip container -->
 
   <script>
-    async function loadQuranData() {
+    async function loadSurahData() {
       try {
-        // Fetch the words data (indopak-qurancom.json)
-        const wordsResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/indopak-qurancom.json');
-        const wordsData = await wordsResponse.json();
+        const surahIndex = getSurahIndexFromURL();  // Get Surah index from the URL
+        const surahData = await fetch('https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah.json').then(res => res.json());
 
-        // Fetch the verse metadata (word.json)
-        const metadataResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/word.json');
-        const metadataData = await metadataResponse.json();
+        // Find the Surah based on the index parameter in the URL
+        const surah = surahData.find(surah => surah.index === surahIndex);
 
-        // Fetch the translation data (en-qurancom.json)
-        const translationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
-        const translationData = await translationResponse.json();
-
-        // Get the container to display the verses
-        const container = document.getElementById('verseContainer');
-
-        // Combine the word data with the verse metadata
-        const verses = {};
-
-        // Loop through each word data and organize them into verses
-        for (const key in wordsData) {
-          if (wordsData.hasOwnProperty(key) && metadataData.hasOwnProperty(key)) {
-            const word = wordsData[key];
-            const metadata = metadataData[key];
-
-            // Get Surah and Ayah
-            const surah = metadata.surah;
-            const ayah = metadata.ayah;
-            const position = metadata.position;
-
-            // Initialize verse if not already created
-            const verseKey = `${surah}:${ayah}`;
-            if (!verses[verseKey]) {
-              verses[verseKey] = {
-                surah: surah,
-                ayah: ayah,
-                words: [],
-              };
-            }
-
-            // Add the word to the verse's words array
-            verses[verseKey].words[position] = word;  // This maintains the order of words
-          }
+        if (!surah) {
+          throw new Error("Surah not found.");
         }
 
-        // Now that we have organized the words in verses, let's display them
-        for (const verseKey in verses) {
-          const verse = verses[verseKey];
+        const verseContainer = document.getElementById('verseContainer');
+        const verses = await loadVerses(surah);
+
+        // Loop through each verse and display it
+        verses.forEach((verseData, index) => {
           const verseElement = document.createElement('div');
           verseElement.classList.add('verse-item');
           
-          // Verse Text in Arabic
           const verseWordsContainer = document.createElement('div');
-          verse.words.forEach((word, index) => {
+          verseData.words.forEach((word, wordIndex) => {
             const wordElement = document.createElement('span');
             wordElement.classList.add('word');
             wordElement.textContent = word;
-            wordElement.setAttribute('data-index', index);
+            wordElement.setAttribute('data-index', wordIndex);
 
-            // Add click event listener to fetch translation
-            wordElement.addEventListener('click', (event) => showTranslation(event, index, translationData));
+            // Add click event listener to fetch translation for the clicked word
+            wordElement.addEventListener('click', (event) => showTranslation(event, wordIndex));
 
             verseWordsContainer.appendChild(wordElement);
           });
+
+          // Add verse words to the verse element
           verseElement.appendChild(verseWordsContainer);
 
-          // Append the verse item to the container
-          container.appendChild(verseElement);
-
-          // Now fetch and display the English translation for this Surah and Ayah
-          const surahNumber = verse.surah;
-          const ayahNumber = verse.ayah;
-          const translation = await fetchTranslation(surahNumber, ayahNumber);
+          // Add English translation for the verse
           const translationElement = document.createElement('div');
           translationElement.classList.add('translation');
-          translationElement.textContent = translation;
+          translationElement.textContent = verseData.translation;
           verseElement.appendChild(translationElement);
+
+          // Append the verse element to the container
+          verseContainer.appendChild(verseElement);
+        });
+      } catch (error) {
+        console.error('Error loading Surah data:', error);
+      }
+    }
+
+    // Fetch the verses for a specific Surah and its verses from the JSON files
+    async function loadVerses(surah) {
+      try {
+        const verseData = [];
+
+        // Loop through each Juz (part) of the Surah
+        for (const juz of surah.juz) {
+          const startVerseKey = juz.verse.start;
+          const endVerseKey = juz.verse.end;
+
+          // Get the list of words for each verse in the range
+          const wordsResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/indopak-qurancom.json');
+          const wordsData = await wordsResponse.json();
+
+          // Get the translation for this part of the Surah
+          const translationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
+          const translationData = await translationResponse.json();
+
+          let verseIndex = parseInt(startVerseKey.split('_')[1]) - 1;  // Convert verse key to 0-based index
+
+          while (verseIndex <= parseInt(endVerseKey.split('_')[1]) - 1) {
+            const verseWords = wordsData[verseIndex];
+            const translation = translationData[verseIndex + 1]; // Adjust to 1-based index
+
+            verseData.push({
+              words: verseWords,
+              translation: translation || 'Translation not available.'
+            });
+
+            verseIndex++;
+          }
         }
 
+        return verseData;
       } catch (error) {
-        console.error('Error fetching the data:', error);
+        console.error('Error fetching verses:', error);
+        return [];
       }
     }
 
-    // Fetch the translation for the specific Surah and Ayah
-    async function fetchTranslation(surahNumber, ayahNumber) {
-      try {
-        const surahResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${surahNumber}.json`);
-        const surahData = await surahResponse.json();
-        
-        // Get the correct verse and translation
-        const verseKey = `verse_${ayahNumber - 1}`; // Adjust to 0-indexed JSON
-        const arabicVerse = surahData.verse[verseKey];
-
-        // If translation data is available, we add it here
-        const englishTranslation = arabicVerse || "Translation not available.";
-        return englishTranslation;
-        
-      } catch (error) {
-        console.error('Error fetching translation:', error);
-        return "Translation not found.";
-      }
-    }
-
-    // Function to show translation next to the clicked word
-    function showTranslation(event, index, translationData) {
-      const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
-      
+    // Function to show tooltip with translation when a word is clicked
+    function showTranslation(event, wordIndex) {
+      // Get the translation for the word
       const tooltip = document.getElementById('tooltip');
-      tooltip.textContent = translation;  // Set the translation text
+      const translation = getWordTranslation(wordIndex);  // Function to fetch translation of a word
 
-      // Position the tooltip next to the clicked word
+      tooltip.textContent = translation;
+      
+      // Position the tooltip next to the word
       const rect = event.target.getBoundingClientRect();
-      tooltip.style.top = `${rect.top + window.scrollY - 30}px`;  // Adjust position above the word
-      tooltip.style.left = `${rect.left + window.scrollX + rect.width + 5}px`;  // Adjust position to the right of the word
+      tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+      tooltip.style.left = `${rect.left + window.scrollX + rect.width + 5}px`;
 
-      // Show the tooltip
       tooltip.style.display = 'block';
 
-      // Hide the tooltip when mouse leaves the word
       event.target.addEventListener('mouseleave', () => {
         tooltip.style.display = 'none';
       });
     }
 
-    // Load Quran data when the page is ready
-    loadQuranData();
+    // Function to extract Surah index from the URL (e.g., index=001)
+    function getSurahIndexFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('index') || '001';  // Default to Surah 1 (Al-Fatiha) if no index is specified
+    }
+
+    // Call the function to load Surah data when the page loads
+    loadSurahData();
   </script>
 </body>
 </html>
