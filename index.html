@@ -6,31 +6,46 @@
   <title>Quranic Verses</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Amiri', serif; /* Use Amiri font for Arabic */
       background-color: #fff;
       color: #000;
       margin: 0;
       padding: 20px;
       text-align: center;
-      direction: rtl;
+      direction: rtl; /* Right to Left for Arabic text */
     }
+
+    /* Load Arabic font */
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
     h1 {
       color: #000;
       font-size: 24px;
       margin-bottom: 20px;
     }
+
     .verse-container {
       display: grid;
       grid-template-columns: 1fr;
       gap: 20px;
     }
+
     .verse-item {
       padding: 10px;
       font-size: 20px;
       text-align: center;
       line-height: 1.5;
       margin-bottom: 20px;
+      border-bottom: 2px solid black; /* Separator line between verses */
     }
+
+    .verse-number {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #333;
+    }
+
     .word {
       display: inline-block;
       margin: 0 5px;
@@ -38,9 +53,16 @@
       font-size: 22px;
       padding: 5px;
     }
+
+    .word.clicked {
+      color: #ff6347; /* Highlight the clicked word in tomato red */
+      background-color: #f0f0f0;
+    }
+
     .word:hover {
       color: #000;
     }
+
     .tooltip {
       display: none;
       position: absolute;
@@ -52,6 +74,7 @@
       border-radius: 3px;
       z-index: 10;
     }
+
     .translation {
       margin-top: 10px;
       font-size: 18px;
@@ -59,11 +82,13 @@
       text-align: center;
       direction: ltr;
     }
+
   </style>
 </head>
 <body>
-  <h1>الآيات القرآنية1</h1>
+  <h1>الآيات القرآنية</h1>
   <div id="verseContainer" class="verse-container"></div>
+
   <div id="tooltip" class="tooltip"></div>
 
   <script>
@@ -146,6 +171,12 @@
           const verseElement = document.createElement('div');
           verseElement.classList.add('verse-item');
 
+          // Add Verse Number
+          const verseNumberElement = document.createElement('div');
+          verseNumberElement.classList.add('verse-number');
+          verseNumberElement.textContent = `(${verse.ayah})`;  // Verse numbering at the end of the English translation
+          verseElement.appendChild(verseNumberElement);
+
           // Verse Text in Arabic
           const verseWordsContainer = document.createElement('div');
           verse.words.forEach((word, index) => {
@@ -154,8 +185,8 @@
             wordElement.textContent = word;
             wordElement.setAttribute('data-index', index);
 
-            // Add click event listener to fetch translation
-            wordElement.addEventListener('click', (event) => showTranslation(event, index, translationData));
+            // Add click event listener to toggle word highlight and update translation
+            wordElement.addEventListener('click', (event) => updateTranslation(event, index, translationData, verse));
 
             verseWordsContainer.appendChild(wordElement);
           });
@@ -175,6 +206,29 @@
       } catch (error) {
         console.error('Error fetching the data:', error);
       }
+    }
+
+    // Function to update translation when a word is clicked
+    function updateTranslation(event, index, translationData, verse) {
+      // Remove highlight from the previously clicked word
+      const previousClicked = document.querySelector('.word.clicked');
+      if (previousClicked) {
+        previousClicked.classList.remove('clicked');
+      }
+
+      // Add highlight to the clicked word
+      event.target.classList.add('clicked');
+
+      // Get the translation for the clicked word
+      const wordTranslation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
+
+      // Show translation for the clicked word in the tooltip
+      showTranslation(event, wordTranslation);
+
+      // Update the full English translation for the verse dynamically
+      const fullTranslation = getFullTranslationForVerse(verse, translationData);
+      const translationElement = event.target.closest('.verse-item').querySelector('.translation');
+      translationElement.textContent = fullTranslation;
     }
 
     // Fetch the translation for the specific Surah and Ayah
@@ -197,12 +251,10 @@
       }
     }
 
-    // Function to show translation next to the clicked word
-    function showTranslation(event, index, translationData) {
-      const translation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
-      
+    // Show translation for a word in the tooltip
+    function showTranslation(event, translation) {
       const tooltip = document.getElementById('tooltip');
-      tooltip.textContent = translation;  // Set the translation text
+      tooltip.textContent = translation;
 
       // Position the tooltip next to the clicked word
       const rect = event.target.getBoundingClientRect();
@@ -216,6 +268,16 @@
       event.target.addEventListener('mouseleave', () => {
         tooltip.style.display = 'none';
       });
+    }
+
+    // Function to get full translation for a verse
+    function getFullTranslationForVerse(verse, translationData) {
+      let fullTranslation = "";
+      verse.words.forEach((word, index) => {
+        const wordTranslation = translationData[index + 1];  // Adjust index as the translation JSON is 1-based
+        fullTranslation += ` ${wordTranslation}`;
+      });
+      return fullTranslation;
     }
 
     // Load Quran data when the page is ready
