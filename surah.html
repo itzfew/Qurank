@@ -9,82 +9,164 @@
         /* Base Styles */
         body {
             font-size: 18px;
-            font-family: 'Amiri', serif;  /* Default to Amiri for Arabic text */
-            background-color: white;
+            font-family: 'Amiri', serif;
+            background-color: #f9f4e1; /* Light background resembling paper */
             color: black;
             direction: rtl;
             margin: 0;
             padding: 0;
             line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            padding-top: 50px;
+            overflow-x: hidden;
+        }
+
+        /* Page Container */
+        .page-container {
+            width: 80%;
+            max-width: 1200px;
+            min-height: 80vh;
+            border: 3px solid #9e8d63;
+            background-color: #fff8e1; /* Slightly off-white for paper look */
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            margin-bottom: 50px;
+            overflow: hidden;
         }
 
         /* Header Styling */
         .header {
             text-align: center;
-            margin-top: 30px;
-            font-size: 2.5em;
+            margin-top: 20px;
+            font-size: 2.5rem;
             font-weight: bold;
             text-transform: uppercase;
-            color: black;
+            color: #3d2b1f;
+            margin-bottom: 20px;
         }
 
-        /* Verse Styling */
-        .verse {
+        /* Page Content Layout */
+        .page-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .verse-container {
+            width: 100%; /* Ensure full width of each verse block */
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        /* Arabic Text */
+        .arabic-text {
+            font-size: 1.5rem;
+            font-family: 'Amiri', serif;
             text-align: right;
-            margin: 15px 20px;
-            padding: 10px;
-            font-size: 1.2em;
-            color: black;
-            cursor: pointer;
+            margin-bottom: 10px;
         }
 
-        .verse:hover {
-            background-color: rgba(0, 0, 0, 0.05); /* Subtle hover effect */
-        }
-
-        .verse-number {
-            font-size: 1.0em;
+        /* English Translation */
+        .english-text {
+            font-size: 1.2rem;
+            font-family: 'Cairo', sans-serif;
+            text-align: right;
             margin-top: 10px;
-            font-weight: bold;
-            display: inline-block;
-            margin-left: 10px;
         }
 
-        /* Back to Top Button Styling */
-        .back-to-top {
+        /* Pagination Styling */
+        .pagination {
             position: fixed;
             bottom: 10px;
-            right: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .pagination button {
             background-color: #007bff;
             color: white;
             border: none;
             padding: 10px 15px;
+            margin: 0 5px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
         }
 
-        .back-to-top:hover {
+        .pagination button:hover {
             background-color: #0056b3;
         }
 
-        /* Additional Styles for Verse Container */
-        .verse {
-            padding: 20px 10px;
-            margin-bottom: 10px;
-            background-color: transparent;
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .page-container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .header {
+                font-size: 2rem;
+            }
+
+            .arabic-text {
+                font-size: 1.3rem;
+            }
+
+            .english-text {
+                font-size: 1rem;
+            }
+
+            .pagination button {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .header {
+                font-size: 1.8rem;
+            }
+
+            .arabic-text {
+                font-size: 1rem;
+            }
+
+            .english-text {
+                font-size: 0.9rem;
+            }
+
+            .pagination button {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header" id="surah-heading">Surah Name</div>
+    <div class="page-container">
+        <div class="header" id="surah-heading">Surah Name</div>
+        <div class="page-content" id="content"></div>
+    </div>
 
-    <div id="first-verse" class="verse"></div>
-    <div id="content"></div>
-
-    <button class="back-to-top" onclick="scrollToTop()">Back to Top</button>
+    <div class="pagination">
+        <button onclick="navigatePage(-1)">Previous</button>
+        <button onclick="navigatePage(1)">Next</button>
+    </div>
 
     <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let surahData = null;
+        const versesPerPage = 10;  // Set the fixed number of verses per page
+
         document.addEventListener('DOMContentLoaded', () => {
             const index = getQueryParam('index');
             fetchSurah(index ? index : 1);
@@ -96,111 +178,75 @@
         }
 
         async function fetchSurah(index) {
-            const arabicResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah/surah_${String(index).padStart(1, '0')}.json`);
-            const arabicData = await arabicResponse.json();
+            try {
+                const arabicResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah/surah_${String(index).padStart(1, '0')}.json`);
+                const arabicData = await arabicResponse.json();
 
-            const translationResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${String(index).padStart(1, '0')}.json`);
-            const translationData = await translationResponse.json();
+                const translationResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${String(index).padStart(1, '0')}.json`);
+                const translationData = await translationResponse.json();
 
-            const urduResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/ur/t_surah_${String(index).padStart(3, '0')}.json`);
-            const urduData = await urduResponse.json();
+                surahData = { arabic: arabicData, translation: translationData };
+                totalPages = Math.ceil(arabicData.count / versesPerPage); // Calculate total pages
 
-            displaySurah(arabicData, translationData, urduData);
+                console.log('Fetched Surah:', arabicData.name, arabicData.count); // Debugging
+
+                displaySurah(currentPage);
+            } catch (error) {
+                console.error('Error fetching Surah:', error);
+            }
         }
 
-        function displaySurah(arabicData, translationData, urduData) {
+        function displaySurah(page) {
+            if (!surahData) return;
+
+            const arabicData = surahData.arabic;
+            const translationData = surahData.translation;
+
+            const startIndex = (page - 1) * versesPerPage;
+            const endIndex = Math.min(page * versesPerPage, arabicData.count);
+
             const surahHeading = document.getElementById('surah-heading');
-            const firstVerse = document.getElementById('first-verse');
             const content = document.getElementById('content');
-            const count = arabicData.count;
-            const arabicVerses = arabicData.verse;
-            const translationVerses = translationData.verse;
-            const urduVerses = urduData.data;
 
             surahHeading.innerText = arabicData.name;
-            firstVerse.innerText = arabicVerses['verse_0'];  // Display translation of verse_0 separately
-
             content.innerHTML = ''; // Clear content
 
-            // Loop through verses starting from verse_1
-            for (let i = 1; i <= count; i++) {
-                const arabicVerse = arabicVerses[`verse_${i}`];
-                const translatedVerse = translationVerses[`verse_${i}`];
-                const urduVerse = urduVerses.find(v => v.aya == i.toString())?.text || ''; // Find corresponding Urdu translation
+            for (let i = startIndex; i < endIndex; i++) {
+                const arabicVerse = arabicData.verse[`verse_${i}`];
+                const translatedVerse = translationData.verse[`verse_${i}`];
 
-                const verseDiv = document.createElement('div');
-                verseDiv.classList.add('verse');
-                verseDiv.setAttribute('id', `verse-${i}`);
+                // Create a verse container
+                const verseContainer = document.createElement('div');
+                verseContainer.classList.add('verse-container');
 
-                let verseContent = '';
+                // Arabic verse
+                const arabicDiv = document.createElement('div');
+                arabicDiv.classList.add('arabic-text');
+                arabicDiv.innerHTML = arabicVerse;
 
-                // Depending on the language mode, display only Arabic, English, Urdu, or both
-                if (localStorage.getItem('languageMode') === 'arabic') {
-                    verseContent = `
-                        <div class="arabic-text">${arabicVerse}
-                            <span class="verse-number">${i}</span>
-                        </div>`;
-                } else if (localStorage.getItem('languageMode') === 'english') {
-                    verseContent = `
-                        <div class="translation-text">${translatedVerse}
-                            <span class="verse-number">${i}</span>
-                        </div>`;
-                } else if (localStorage.getItem('languageMode') === 'urdu') {
-                    verseContent = `
-                        <div class="urdu-text">${urduVerse}
-                            <span class="verse-number">${i}</span>
-                        </div>`;
-                } else {
-                    verseContent = `
-                        <div class="arabic-text">${arabicVerse}
-                            <span class="verse-number">${i}</span>
-                        </div>
-                        <div class="translation-text">${translatedVerse}</div>
-                        <div class="urdu-text">${urduVerse}</div>`;
-                }
+                // English translation
+                const translationDiv = document.createElement('div');
+                translationDiv.classList.add('english-text');
+                translationDiv.innerHTML = translatedVerse;
 
-                verseDiv.innerHTML = verseContent;
+                // Add Arabic and Translation to the verse container
+                verseContainer.appendChild(arabicDiv);
+                verseContainer.appendChild(translationDiv);
 
-                // Add event listener to highlight verse
-                verseDiv.onclick = () => toggleHighlight(i);
-
-                content.appendChild(verseDiv);
+                // Append verse container to the content
+                content.appendChild(verseContainer);
             }
         }
 
-        function toggleHighlight(verseId) {
-            // Remove highlight from all verses
-            const allVerses = document.querySelectorAll('.verse');
-            allVerses.forEach(verse => {
-                verse.classList.remove('selected');
-            });
+        function navigatePage(direction) {
+            currentPage += direction;
 
-            // Add highlight to clicked verse
-            const verseElement = document.getElementById(`verse-${verseId}`);
-            verseElement.classList.add('selected');
-        }
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
 
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            console.log('Navigating to page:', currentPage); // Debugging
 
-        function navigateSurah(direction) {
-            let currentSurahIndex = parseInt(getQueryParam('index')) || 1;
-            currentSurahIndex += direction;  // Change the index based on arrow clicked
-
-            // Make sure the surah index stays within the valid range (1 to 114)
-            if (currentSurahIndex < 1) {
-                currentSurahIndex = 1;
-            } else if (currentSurahIndex > 114) {
-                currentSurahIndex = 114;
-            }
-
-            // Change the URL without refreshing the page
-            const newUrl = `https://quran-online.pages.dev/surah?index=${currentSurahIndex}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-
-            // Refresh the page to reload the surah content
-            window.location.reload();  // Refresh the page after updating the URL
+            displaySurah(currentPage);
         }
     </script>
 </body>
