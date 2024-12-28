@@ -31,6 +31,7 @@
             background-color: #fff8e1; /* Slightly off-white for paper look */
             border-radius: 15px;
             padding: 30px;
+            box-sizing: border-box; /* Include padding in element's total width/height */
             position: relative;
             margin-bottom: 50px;
             overflow: hidden;
@@ -71,6 +72,7 @@
             font-family: 'Amiri', serif;
             text-align: right;
             margin: 0;
+            padding-right: 10px; /* Ensure padding on right to prevent text from touching edges */
         }
 
         /* Verse Number in Circle */
@@ -125,6 +127,7 @@
 
             .arabic-text {
                 font-size: 1.3rem;
+                padding-right: 15px; /* Increase padding for readability */
             }
 
             .verse-number {
@@ -148,6 +151,7 @@
 
             .arabic-text {
                 font-size: 1rem;
+                padding-right: 10px; /* Ensure readability without overcrowding */
             }
 
             .verse-number {
