@@ -24,7 +24,7 @@
 
         /* Page Container */
         .page-container {
-            width: 80%;
+            width: 90%;
             max-width: 1200px;
             min-height: 80vh;
             border: 3px solid #9e8d63;
@@ -115,7 +115,7 @@
         /* Responsive Design */
         @media screen and (max-width: 768px) {
             .page-container {
-                width: 90%;
+                width: 95%;
                 padding: 20px;
             }
 
@@ -127,9 +127,17 @@
                 font-size: 1.3rem;
             }
 
+            .verse-number {
+                font-size: 1rem;
+            }
+
             .pagination button {
                 font-size: 0.9rem;
                 padding: 8px 12px;
+            }
+
+            .page-content {
+                justify-content: flex-start; /* Avoid overflow */
             }
         }
 
@@ -142,9 +150,17 @@
                 font-size: 1rem;
             }
 
+            .verse-number {
+                font-size: 0.9rem;
+            }
+
             .pagination button {
                 font-size: 0.8rem;
                 padding: 6px 10px;
+            }
+
+            .page-content {
+                justify-content: flex-start; /* Avoid overflow */
             }
         }
     </style>
