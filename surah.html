@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quran Kareem (Ar)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Cairo&family=El+Messiri&family=Harmattan&family=Lateef&family=Scheherazade+New&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     <style>
         /* Base Styles */
         body {
@@ -50,18 +50,19 @@
         /* Page Content Layout */
         .page-content {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap; /* Allow wrapping if there's not enough space */
             align-items: flex-start;
-            gap: 20px;
-            flex-wrap: wrap;
+            gap: 10px; /* Slight gap between verses */
+            flex-direction: row; /* Keep verses on the same line */
+            justify-content: flex-start; /* Align to the left */
+            margin: 0;
         }
 
         .verse-container {
-            width: 100%; /* Ensure full width of each verse block */
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            display: inline-flex; /* Keeps verses next to each other on the same line */
+            align-items: center;
+            line-height: 1.5;
+            white-space: nowrap; /* Prevents the text from breaking */
         }
 
         /* Arabic Text */
@@ -69,15 +70,21 @@
             font-size: 1.5rem;
             font-family: 'Amiri', serif;
             text-align: right;
-            margin-bottom: 10px;
+            margin: 0;
         }
 
-        /* English Translation */
-        .english-text {
+        /* Verse Number in Circle */
+        .verse-number {
+            width: 30px;
+            height: 30px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
             font-size: 1.2rem;
-            font-family: 'Cairo', sans-serif;
-            text-align: right;
-            margin-top: 10px;
+            margin-left: 10px; /* Space between Arabic text and verse number */
+            vertical-align: middle;
         }
 
         /* Pagination Styling */
@@ -120,10 +127,6 @@
                 font-size: 1.3rem;
             }
 
-            .english-text {
-                font-size: 1rem;
-            }
-
             .pagination button {
                 font-size: 0.9rem;
                 padding: 8px 12px;
@@ -137,10 +140,6 @@
 
             .arabic-text {
                 font-size: 1rem;
-            }
-
-            .english-text {
-                font-size: 0.9rem;
             }
 
             .pagination button {
@@ -182,10 +181,7 @@
                 const arabicResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah/surah_${String(index).padStart(1, '0')}.json`);
                 const arabicData = await arabicResponse.json();
 
-                const translationResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/translation/en/en_translation_${String(index).padStart(1, '0')}.json`);
-                const translationData = await translationResponse.json();
-
-                surahData = { arabic: arabicData, translation: translationData };
+                surahData = { arabic: arabicData };
                 totalPages = Math.ceil(arabicData.count / versesPerPage); // Calculate total pages
 
                 console.log('Fetched Surah:', arabicData.name, arabicData.count); // Debugging
@@ -200,7 +196,6 @@
             if (!surahData) return;
 
             const arabicData = surahData.arabic;
-            const translationData = surahData.translation;
 
             const startIndex = (page - 1) * versesPerPage;
             const endIndex = Math.min(page * versesPerPage, arabicData.count);
@@ -213,7 +208,6 @@
 
             for (let i = startIndex; i < endIndex; i++) {
                 const arabicVerse = arabicData.verse[`verse_${i}`];
-                const translatedVerse = translationData.verse[`verse_${i}`];
 
                 // Create a verse container
                 const verseContainer = document.createElement('div');
@@ -224,14 +218,14 @@
                 arabicDiv.classList.add('arabic-text');
                 arabicDiv.innerHTML = arabicVerse;
 
-                // English translation
-                const translationDiv = document.createElement('div');
-                translationDiv.classList.add('english-text');
-                translationDiv.innerHTML = translatedVerse;
+                // Verse number in circle (inline with the verse)
+                const verseNumber = document.createElement('div');
+                verseNumber.classList.add('verse-number');
+                verseNumber.innerText = i + 1; // Adding 1 as verse numbers start from 1
 
-                // Add Arabic and Translation to the verse container
+                // Add Arabic verse and verse number to the verse container
                 verseContainer.appendChild(arabicDiv);
-                verseContainer.appendChild(translationDiv);
+                verseContainer.appendChild(verseNumber);
 
                 // Append verse container to the content
                 content.appendChild(verseContainer);
