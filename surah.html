@@ -1,267 +1,204 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quran Kareem (Ar)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
-    <style>
-        /* Base Styles */
-        body {
-            font-size: 18px;
-            font-family: 'Amiri', serif;
-            background-color: #f9f4e1; /* Light background resembling paper */
-            color: black;
-            direction: rtl;
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
-            display: flex;
-            justify-content: center;
-            padding-top: 50px;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quranic Verses</title>
+  <style>
+    /* Base Styles */
+    body {
+      font-family: 'Amiri', 'Tahoma', 'Arial', sans-serif; /* Arabic font for better readability */
+      background-color: white;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: black;
+      direction: rtl; /* Right-to-left layout for Arabic */
+    }
+    
+    h1 {
+      color: black;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
 
-        /* Page Container */
-        .page-container {
-            width: 90%;
-            max-width: 1200px;
-            min-height: 80vh;
-            border: 3px solid #9e8d63;
-            background-color: #fff8e1; /* Slightly off-white for paper look */
-            border-radius: 15px;
-            padding: 30px;
-            box-sizing: border-box; /* Include padding in element's total width/height */
-            position: relative;
-            margin-bottom: 50px;
-            overflow: hidden;
-        }
+    /* Verse Container Styles */
+    .verse-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
 
-        /* Header Styling */
-        .header {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 2.5rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #3d2b1f;
-            margin-bottom: 20px;
-        }
+    .verse-item {
+      padding: 20px;
+      font-size: 18px;
+      text-align: right;
+      direction: rtl;
+      margin: 10px;
+    }
 
-        /* Page Content Layout */
-        .page-content {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping if there's not enough space */
-            align-items: flex-start;
-            gap: 10px; /* Slight gap between verses */
-            flex-direction: row; /* Keep verses on the same line */
-            justify-content: flex-start; /* Align to the left */
-            margin: 0;
-        }
+    .verse-header {
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
 
-        .verse-container {
-            display: inline-flex; /* Keeps verses next to each other on the same line */
-            align-items: center;
-            line-height: 1.5;
-            white-space: nowrap; /* Prevents the text from breaking */
-        }
+    /* Word Styles */
+    .verse-words-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
 
-        /* Arabic Text */
-        .arabic-text {
-            font-size: 1.5rem;
-            font-family: 'Amiri', serif;
-            text-align: right;
-            margin: 0;
-            padding-right: 10px; /* Ensure padding on right to prevent text from touching edges */
-        }
+    .word {
+      display: inline-block;
+      padding: 8px 12px;
+      font-size: 20px;
+      margin: 5px;
+      text-align: center;
+      white-space: nowrap;
+    }
 
-        /* Verse Number in Circle */
-        .verse-number {
-            width: 30px;
-            height: 30px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 30px;
-            font-size: 1.2rem;
-            margin-left: 10px; /* Space between Arabic text and verse number */
-            vertical-align: middle;
-        }
+    .word:hover {
+      background-color: #d9534f;
+    }
 
-        /* Pagination Styling */
-        .pagination {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-        }
+    /* Translation Styling */
+    .translation {
+      font-size: 16px;
+      color: #555;
+      margin-top: 5px;
+      text-align: center;
+    }
 
-        .pagination button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 0 5px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
+    /* Responsive Styles */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 24px;
+      }
+      
+      .verse-item {
+        padding: 10px;
+      }
+      
+      .verse-header {
+        font-size: 18px;
+      }
+      
+      .word {
+        font-size: 14px;
+        padding: 5px 8px;
+      }
+      
+      .translation {
+        font-size: 14px;
+      }
+    }
 
-        .pagination button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            .page-container {
-                width: 95%;
-                padding: 20px;
-            }
-
-            .header {
-                font-size: 2rem;
-            }
-
-            .arabic-text {
-                font-size: 1.3rem;
-                padding-right: 15px; /* Increase padding for readability */
-            }
-
-            .verse-number {
-                font-size: 1rem;
-            }
-
-            .pagination button {
-                font-size: 0.9rem;
-                padding: 8px 12px;
-            }
-
-            .page-content {
-                justify-content: flex-start; /* Avoid overflow */
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .header {
-                font-size: 1.8rem;
-            }
-
-            .arabic-text {
-                font-size: 1rem;
-                padding-right: 10px; /* Ensure readability without overcrowding */
-            }
-
-            .verse-number {
-                font-size: 0.9rem;
-            }
-
-            .pagination button {
-                font-size: 0.8rem;
-                padding: 6px 10px;
-            }
-
-            .page-content {
-                justify-content: flex-start; /* Avoid overflow */
-            }
-        }
-    </style>
+  </style>
 </head>
 <body>
-    <div class="page-container">
-        <div class="header" id="surah-heading">Surah Name</div>
-        <div class="page-content" id="content"></div>
-    </div>
+  <h1>آيات القرآن الكريم</h1> <!-- "Quranic Verses" in Arabic -->
+  <div id="verseContainer" class="verse-container"></div>
 
-    <div class="pagination">
-        <button onclick="navigatePage(-1)">Previous</button>
-        <button onclick="navigatePage(1)">Next</button>
-    </div>
+  <script>
+    async function loadQuranData() {
+      try {
+        // Fetch the Arabic words data (indopak-qurancom.json)
+        const wordTextResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/indopak-qurancom.json');
+        const wordTextData = await wordTextResponse.json();
 
-    <script>
-        let currentPage = 1;
-        let totalPages = 1;
-        let surahData = null;
-        const versesPerPage = 10;  // Set the fixed number of verses per page
+        // Fetch the translation data (en-qurancom.json)
+        const wordTranslationResponse = await fetch('https://raw.githubusercontent.com/itzfew/Qurank/refs/heads/main/source/en-qurancom.json');
+        const wordTranslationData = await wordTranslationResponse.json();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const index = getQueryParam('index');
-            fetchSurah(index ? index : 1);
-        });
+        // Fetch the metadata (word.json)
+        const metadataResponse = await fetch('https://raw.githubusercontent.com/hablullah/data-quran/refs/heads/master/word/word.json');
+        const metadataData = await metadataResponse.json();
 
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
+        // Get the container to display the verses
+        const container = document.getElementById('verseContainer');
 
-        async function fetchSurah(index) {
-            try {
-                const arabicResponse = await fetch(`https://raw.githubusercontent.com/itzfew/Quran-Online/refs/heads/main/source/surah/surah_${String(index).padStart(1, '0')}.json`);
-                const arabicData = await arabicResponse.json();
+        // Prepare to organize verses by Surah and Ayah
+        const verses = {};
 
-                surahData = { arabic: arabicData };
-                totalPages = Math.ceil(arabicData.count / versesPerPage); // Calculate total pages
+        // Loop through metadata and organize words by Surah, Ayah, and position
+        for (const key in metadataData) {
+          if (metadataData.hasOwnProperty(key)) {
+            const metadata = metadataData[key];
+            const surah = metadata.surah;
+            const ayah = metadata.ayah;
+            const position = metadata.position;
 
-                console.log('Fetched Surah:', arabicData.name, arabicData.count); // Debugging
-
-                displaySurah(currentPage);
-            } catch (error) {
-                console.error('Error fetching Surah:', error);
+            // Initialize verse object if it doesn't already exist
+            const verseKey = `${surah}:${ayah}`;
+            if (!verses[verseKey]) {
+              verses[verseKey] = {
+                surah: surah,
+                ayah: ayah,
+                words: [],
+              };
             }
+
+            // Get the word from the indopak-qurancom.json (Arabic word)
+            const arabicWord = wordTextData[key] || "N/A"; // Fallback if word not found
+            const translation = wordTranslationData[key] || "Translation not available"; // Fallback if translation not found
+
+            // Add the word along with its translation and position to the verse
+            verses[verseKey].words.push({ arabic: arabicWord, translation: translation, position: position });
+          }
         }
 
-        function displaySurah(page) {
-            if (!surahData) return;
+        // Now that we have organized the words by Surah and Ayah, let's display them
+        for (const verseKey in verses) {
+          const verse = verses[verseKey];
+          const verseElement = document.createElement('div');
+          verseElement.classList.add('verse-item');
+          
+          // Verse Header (Surah and Ayah)
+          const verseHeader = document.createElement('div');
+          verseHeader.classList.add('verse-header');
+          verseHeader.textContent = `سورة ${verse.surah}, آية ${verse.ayah}`;
+          verseElement.appendChild(verseHeader);
 
-            const arabicData = surahData.arabic;
+          // Display the words for each verse
+          const verseWordsContainer = document.createElement('div');
+          verseWordsContainer.classList.add('verse-words-container');
+          verse.words.sort((a, b) => a.position - b.position); // Ensure words are ordered by position
 
-            const startIndex = (page - 1) * versesPerPage;
-            const endIndex = Math.min(page * versesPerPage, arabicData.count);
+          verse.words.forEach(wordObj => {
+            const wordElement = document.createElement('span');
+            wordElement.classList.add('word');
+            wordElement.textContent = wordObj.arabic; // Display Arabic word
 
-            const surahHeading = document.getElementById('surah-heading');
-            const content = document.getElementById('content');
+            // Translation under each word
+            const translationElement = document.createElement('div');
+            translationElement.classList.add('translation');
+            translationElement.textContent = wordObj.translation;
 
-            surahHeading.innerText = arabicData.name;
-            content.innerHTML = ''; // Clear content
+            // Append word and translation to the verse container
+            const wordWithTranslationContainer = document.createElement('div');
+            wordWithTranslationContainer.appendChild(wordElement);
+            wordWithTranslationContainer.appendChild(translationElement);
 
-            for (let i = startIndex; i < endIndex; i++) {
-                const arabicVerse = arabicData.verse[`verse_${i}`];
+            verseWordsContainer.appendChild(wordWithTranslationContainer);
+          });
 
-                // Create a verse container
-                const verseContainer = document.createElement('div');
-                verseContainer.classList.add('verse-container');
-
-                // Arabic verse
-                const arabicDiv = document.createElement('div');
-                arabicDiv.classList.add('arabic-text');
-                arabicDiv.innerHTML = arabicVerse;
-
-                // Verse number in circle (inline with the verse)
-                const verseNumber = document.createElement('div');
-                verseNumber.classList.add('verse-number');
-                verseNumber.innerText = i + 1; // Adding 1 as verse numbers start from 1
-
-                // Add Arabic verse and verse number to the verse container
-                verseContainer.appendChild(arabicDiv);
-                verseContainer.appendChild(verseNumber);
-
-                // Append verse container to the content
-                content.appendChild(verseContainer);
-            }
+          verseElement.appendChild(verseWordsContainer);
+          container.appendChild(verseElement);
         }
 
-        function navigatePage(direction) {
-            currentPage += direction;
+      } catch (error) {
+        console.error('Error fetching the data:', error);
+      }
+    }
 
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            console.log('Navigating to page:', currentPage); // Debugging
-
-            displaySurah(currentPage);
-        }
-    </script>
+    // Load Quran data when the page is ready
+    loadQuranData();
+  </script>
 </body>
 </html>
